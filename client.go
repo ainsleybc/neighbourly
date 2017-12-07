@@ -2,10 +2,6 @@ package main
 
 import "github.com/gorilla/websocket"
 
-// r "github.com/dancannon/gorethink"
-// "github.com/gorilla/websocket"
-// "log"
-
 type Client struct {
 	send   chan Message
 	socket *websocket.Conn
