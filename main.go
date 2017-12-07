@@ -12,8 +12,6 @@ func main() {
 	// http.ListenAndServe(":4000", nil)
 }
 
-type Handler func(*Client, interface{})
-
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,

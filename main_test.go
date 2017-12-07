@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"testing"
@@ -12,7 +11,9 @@ import (
 )
 
 func TestMain(m *testing.M) {
+	// test set up
 	result := m.Run()
+	// test tear down
 	os.Exit(result)
 }
 
@@ -32,12 +33,12 @@ func TestAddFeed(t *testing.T) {
 
 	// new router
 	testRouter := NewRouter(testDBSession)
+
+	// mock server thingy
 	d := wstest.NewDialer(testRouter, nil)
-	fmt.Println("david")
 
 	// open websocket connection (skip error)
 	conn, resp, err := d.Dial("ws://localhost:4000", nil)
-	fmt.Println("david")
 
 	// assertion 1 (check websocket upgrade connection status)
 	got, want := resp.StatusCode, http.StatusSwitchingProtocols
@@ -45,12 +46,10 @@ func TestAddFeed(t *testing.T) {
 		t.Errorf("resp.StatusCode: %v, want: %v", got, want)
 	}
 
-	// creating test message and passing it through websocket
-	fmt.Println("david")
-
+	// register handler for addFeed message
 	testRouter.Handle("feed add", addFeed)
-	fmt.Println("david")
 
+	// creating test message and passing it through websocket
 	rawMessage := []byte(`{"name":"feed add", ` +
 		`"data":{"Address":"Makers Academy"`)
 
@@ -60,21 +59,15 @@ func TestAddFeed(t *testing.T) {
 	}
 
 	// simple timeout to allow to database writes
-	fmt.Println("david")
 	time.Sleep(time.Second * 1)
 
 	// write assertion
-
 	res, err := r.Table("feed").Nth(0).Run(testDBSession)
-	// fmt.Printf("%v", conn)
-	// fmt.Printf("%v", rawMessage)
 
 	var row map[string]string
 	var david string
-	fmt.Println("david")
-
+	// res.One(&row) <- try and use this thing
 	for res.Next(&row) {
-		fmt.Println("david")
 		david = row["Address"]
 	}
 	got2, want2 := david, "Makers Academy"
