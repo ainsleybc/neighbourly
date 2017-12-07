@@ -7,6 +7,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type Handle func(*Client, Message)
+
 type Client struct {
 	socket       *websocket.Conn
 	Handle       Handle
@@ -32,14 +34,14 @@ func (c *Client) Close() {
 	close(c.send)
 }
 
-func (client *Client) Read() {
+func (c *Client) Read() {
 	var message Message
 	for {
-		if err := client.socket.ReadJSON(&message); err != nil {
+		if err := c.socket.ReadJSON(&message); err != nil {
 			fmt.Printf("%v\n", err)
 			break
 		}
-		client.Handle(client, message)
+		c.Handle(c, message)
 	}
-	client.socket.Close()
+	c.socket.Close()
 }

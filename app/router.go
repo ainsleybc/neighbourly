@@ -11,17 +11,13 @@ type Router struct {
 	rules   map[string]Handler
 	session *r.Session
 }
-type Handle func(*Client, Message)
+type Handler func(*Client, interface{})
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
-
-// func (r *Router) RegisterHandler(msgName string, handler Handler) {
-// 	r.rules[msgName] = handler
-// }
 
 func (r *Router) Handle(client *Client, msg Message) {
 	handler := r.rules[msg.Name]
