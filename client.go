@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/json"
+	"fmt"
 
 	"github.com/gorilla/websocket"
 )
@@ -31,12 +31,11 @@ func (c *Client) Close() {
 
 func (client *Client) Read() {
 	var message Message
-	var data []byte
 	for {
-		if err := client.socket.ReadJSON(&data); err != nil {
+		if err := client.socket.ReadJSON(&message); err != nil {
+			fmt.Printf("%v\n", err)
 			break
 		}
-		json.Unmarshal(data, &message)
 		client.Handle(client, message)
 	}
 	client.socket.Close()

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"os"
 	"testing"
@@ -50,7 +51,7 @@ func TestAddFeed(t *testing.T) {
 	testRouter.RegisterHandler("feed add", addFeed)
 
 	// creating test message and passing it through websocket
-	rawMessage := []byte(`{"name":"feed add", ` +
+	rawMessage := json.RawMessage(`{"name":"feed add", ` +
 		`"data":{"Address":"Makers Academy"}}`)
 
 	err = conn.WriteJSON(rawMessage)
@@ -73,7 +74,7 @@ func TestAddFeed(t *testing.T) {
 	if got2 != want2 {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
-	// r.TableDrop("feed").Wait().Exec(session)
+	r.TableDrop("feed").Wait().Exec(session)
 }
 
 // read assertion needed
