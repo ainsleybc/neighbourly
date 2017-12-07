@@ -5,7 +5,7 @@ type Message struct {
 	Data interface{} `json:"data"`
 }
 
-type User struct {
-	Id   string `gorethink:"id,omitempty"`
-	Name string `gorethink:"name"`
+type Feed struct {
+	Id      string `gorethink:"id,omitempty"`
+	Address string `gorethink:"address"`
 }

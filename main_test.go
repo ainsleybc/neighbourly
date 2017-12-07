@@ -20,7 +20,7 @@ func TestMain(m *testing.M) {
 func TestAddFeed(t *testing.T) {
 
 	// connect to rethinkDB
-	session, err := r.Connect(r.ConnectOpts{
+	session, _ = r.Connect(r.ConnectOpts{
 		Address:  "localhost:28015",
 		Database: "test",
 	})
@@ -67,13 +67,13 @@ func TestAddFeed(t *testing.T) {
 	var david string
 	// res.One(&row) <- try and use this thing
 	for res.Next(&row) {
-		david = row["Address"]
+		david = row["address"]
 	}
 	got2, want2 := david, "Makers Academy"
 	if got2 != want2 {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
-	r.TableDrop("feed").Wait().Exec(session)
+	// r.TableDrop("feed").Wait().Exec(session)
 }
 
 // read assertion needed

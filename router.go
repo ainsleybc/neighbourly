@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -23,9 +22,8 @@ func (r *Router) RegisterHandler(msgName string, handler Handler) {
 }
 
 func (r *Router) Handle(client *Client, msg Message) {
-	// handler := r.rules[msg.Name]
-	// handler(client, msg.Data)
-	fmt.Println("Hello")
+	handler := r.rules[msg.Name]
+	handler(client, msg.Data)
 }
 
 func NewRouter() *Router {
