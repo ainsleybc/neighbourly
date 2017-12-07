@@ -18,7 +18,7 @@ func TestMain(m *testing.M) {
 func TestAddFeed(t *testing.T) {
 
 	// connect to rethinkDB
-	testDBSession, err := r.Connect(r.ConnectOps{
+	testDBSession, err := r.Connect(r.ConnectOpts{
 		Address:  "localhost:28015",
 		Database: "test",
 	})
