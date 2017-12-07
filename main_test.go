@@ -20,19 +20,19 @@ func TestMain(m *testing.M) {
 func TestAddFeed(t *testing.T) {
 
 	// connect to rethinkDB
-	testDBSession, err := r.Connect(r.ConnectOpts{
+	session, err := r.Connect(r.ConnectOpts{
 		Address:  "localhost:28015",
 		Database: "test",
 	})
 
 	// close session on end test
-	defer testDBSession.Close()
+	defer session.Close()
 
 	// create the tables for test
-	r.TableCreate("feed").RunWrite(testDBSession)
+	r.TableCreate("feed").RunWrite(session)
 
 	// new router
-	testRouter := NewRouter(testDBSession)
+	testRouter := NewRouter()
 
 	// mock server thingy
 	d := wstest.NewDialer(testRouter, nil)
@@ -47,22 +47,21 @@ func TestAddFeed(t *testing.T) {
 	}
 
 	// register handler for addFeed message
-	testRouter.Handle("feed add", addFeed)
+	testRouter.RegisterHandler("feed add", addFeed)
 
 	// creating test message and passing it through websocket
 	rawMessage := []byte(`{"name":"feed add", ` +
-		`"data":{"Address":"Makers Academy"`)
+		`"data":{"Address":"Makers Academy"}}`)
 
 	err = conn.WriteJSON(rawMessage)
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	// simple timeout to allow to database writes
 	time.Sleep(time.Second * 1)
 
 	// write assertion
-	res, err := r.Table("feed").Nth(0).Run(testDBSession)
+	res, err := r.Table("feed").Nth(0).Run(session)
 
 	var row map[string]string
 	var david string
@@ -74,7 +73,7 @@ func TestAddFeed(t *testing.T) {
 	if got2 != want2 {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
-	r.TableDrop("feed").Wait().Exec(testDBSession)
+	r.TableDrop("feed").Wait().Exec(session)
 }
 
 // read assertion needed
