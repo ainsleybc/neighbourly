@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-
+	// http.HandleFunc("/", handler)
+	// http.ListenAndServe(":4000", nil)
 }
 
 type Handler func(*Client, interface{})
@@ -32,6 +33,7 @@ func NewRouter(session *r.Session) *Router {
 }
 
 func (e *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	upgrader.Upgrade(w, r, nil)
 	// client := NewClient(socket, e.FindHandler, e.session)
 	// defer client.Close()
 	// go client.Write()
