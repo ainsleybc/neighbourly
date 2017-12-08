@@ -54,7 +54,7 @@ func TestAddPost(t *testing.T) {
 
 	// creating test message and passing it through websocket
 	rawMessage := json.RawMessage(`{"name":"post add", ` +
-		`"data":{"name":"Jon", "time":"2017-12-08T12:09:57.341Z", "text":"Hey Neigh!", "address_id":"123hhsj111"}}`)
+		`"data":{"name":"Jon", "text":"Hey Neigh!", "feedId":"123hhsj111"}}`)
 
 	err = conn.WriteJSON(rawMessage)
 	if err != nil {
@@ -66,32 +66,27 @@ func TestAddPost(t *testing.T) {
 	// write assertion
 	res, err := r.Table("posts").Nth(0).Run(session)
 
-	var row map[string]string
+	var row map[string]interface{}
 	var expectedStr string
 	// res.One(&row) <- try and use this thing
+
 	for res.Next(&row) {
-		expectedStr = row["name"]
+		expectedStr = row["name"].(string)
 	}
+
 	got2, want2 := expectedStr, "Jon"
 	if got2 != want2 {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
 
-	expectedStr = row["time"]
-
-	got2, want2 = expectedStr, "2017-12-08T12:09:57.341Z"
-	if got2 != want2 {
-		t.Errorf("got: %v, want: %v", got2, want2)
-	}
-
-	expectedStr = row["text"]
+	expectedStr = row["text"].(string)
 
 	got2, want2 = expectedStr, "Hey Neigh!"
 	if got2 != want2 {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
 
-	expectedStr = row["address_id"]
+	expectedStr = row["feedId"].(string)
 
 	got2, want2 = expectedStr, "123hhsj111"
 	if got2 != want2 {

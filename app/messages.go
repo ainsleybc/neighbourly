@@ -1,19 +1,21 @@
 package app
 
+import "time"
+
 type Message struct {
 	Name string      `json:"name"`
 	Data interface{} `json:"data"`
 }
 
 type Feed struct {
-	Id      string `gorethink:"id,omitempty"`
-	Address string `gorethink:"address"`
+	ID      string `gorethink:"id,omitempty"`
+	Address string `gorethink:"address,omitempty"`
 }
 
 type Post struct {
-	Id         string `gorethink:"id,omitempty"`
-	Name       string `gorethink:"name"`
-	Time       string `gorethink:"time"`
-	Text       string `gorethink:"text"`
-	Address_id string `gorethink:"address_id"`
+	ID        string    `gorethink:"id,omitempty"`
+	Name      string    `gorethink:"name"`
+	CreatedAt time.Time `gorethink:"createdAt"`
+	Text      string    `gorethink:"text"`
+	FeedID    string    `gorethink:"feedId"`
 }
