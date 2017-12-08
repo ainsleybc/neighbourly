@@ -14,3 +14,13 @@ func AddFeed(client *Client, data interface{}) {
 			Exec(client.session)
 	}()
 }
+
+func AddPost(client *Client, data interface{}) {
+	var post Post
+	mapstructure.Decode(data, &post)
+	go func() {
+		r.Table("posts").
+			Insert(post).
+			Exec(client.session)
+	}()
+}
