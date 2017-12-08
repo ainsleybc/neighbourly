@@ -34,7 +34,6 @@ func (e *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	socket, _ := upgrader.Upgrade(w, r, nil)
 	client := NewClient(socket, e.handlers, e.session)
 	defer client.Close()
-	// go client.Write()
+	go client.Write()
 	client.Read()
-
 }
