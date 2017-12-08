@@ -21,6 +21,16 @@ func AddFeed(client *Client, data interface{}) {
 	}()
 }
 
+func AddPost(client *Client, data interface{}) {
+	var post Post
+	mapstructure.Decode(data, &post)
+	go func() {
+		r.Table("posts").
+			Insert(post).
+			Exec(client.session)
+	}()
+}
+
 func SubscribeFeed(client *Client, data interface{}) {
 	go func() {
 		stop := client.NewStopChannel(ChannelStop)

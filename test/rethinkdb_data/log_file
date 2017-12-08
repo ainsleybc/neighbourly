@@ -1,0 +1,24 @@
+2017-12-08T12:44:41.885958000 40.052749s notice: Recursively removing directory /Users/georgelamprakis/go/src/github.com/ainsleybc/neighbourly/test/rethinkdb_data/tmp
+2017-12-08T12:44:41.890068000 40.056863s notice: Initializing directory /Users/georgelamprakis/go/src/github.com/ainsleybc/neighbourly/test/rethinkdb_data
+2017-12-08T12:44:41.890164000 40.056953s info: Creating a default database for your convenience. (This is because you ran 'rethinkdb' without 'create', 'serve', or '--join', and the directory '/Users/georgelamprakis/go/src/github.com/ainsleybc/neighbourly/test/rethinkdb_data' did not already exist or is empty.)
+2017-12-08T12:44:41.890190000 40.056979s notice: Running rethinkdb 2.3.6 (CLANG 8.1.0 (clang-802.0.42))...
+2017-12-08T12:44:41.909451000 40.076242s notice: Running on Darwin 16.7.0 x86_64
+2017-12-08T12:44:41.909486000 40.076275s notice: Loading data from directory /Users/georgelamprakis/go/src/github.com/ainsleybc/neighbourly/test/rethinkdb_data
+2017-12-08T12:44:42.020545000 40.187335s info: Automatically using cache size of 100 MB
+2017-12-08T12:44:42.020556000 40.187346s warn: Cache size does not leave much memory for server and query overhead (available memory: 773 MB).
+2017-12-08T12:44:42.020569000 40.187359s warn: Cache size is very low and may impact performance.
+2017-12-08T12:44:42.021024000 40.187813s error: TCP socket creation failed for port 29015: Address already in use.
+2017-12-08T12:45:38.852493000 40.023705s notice: Running rethinkdb 2.3.6 (CLANG 8.1.0 (clang-802.0.42))...
+2017-12-08T12:45:38.870039000 40.041247s notice: Running on Darwin 16.7.0 x86_64
+2017-12-08T12:45:38.870082000 40.041288s notice: Loading data from directory /Users/georgelamprakis/go/src/github.com/ainsleybc/neighbourly/test/rethinkdb_data
+2017-12-08T12:45:38.905312000 40.076518s info: Automatically using cache size of 100 MB
+2017-12-08T12:45:38.905323000 40.076529s warn: Cache size does not leave much memory for server and query overhead (available memory: 681 MB).
+2017-12-08T12:45:38.905326000 40.076532s warn: Cache size is very low and may impact performance.
+2017-12-08T12:45:38.905704000 40.076910s error: TCP socket creation failed for port 29015: Address already in use.
+2017-12-08T12:46:48.131903000 40.019645s notice: Running rethinkdb 2.3.6 (CLANG 8.1.0 (clang-802.0.42))...
+2017-12-08T12:46:48.137290000 40.025029s notice: Running on Darwin 16.7.0 x86_64
+2017-12-08T12:46:48.137328000 40.025066s notice: Loading data from directory /Users/georgelamprakis/go/src/github.com/ainsleybc/neighbourly/test/rethinkdb_data
+2017-12-08T12:46:48.167695000 40.055418s info: Automatically using cache size of 100 MB
+2017-12-08T12:46:48.167707000 40.055429s warn: Cache size does not leave much memory for server and query overhead (available memory: 826 MB).
+2017-12-08T12:46:48.167711000 40.055433s warn: Cache size is very low and may impact performance.
+2017-12-08T12:46:48.168161000 40.055883s error: TCP socket creation failed for port 29015: Address already in use.
