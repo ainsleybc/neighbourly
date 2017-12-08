@@ -1,6 +1,8 @@
 package app
 
 import (
+	"time"
+
 	r "github.com/dancannon/gorethink"
 	"github.com/mitchellh/mapstructure"
 )
@@ -25,6 +27,7 @@ func AddPost(client *Client, data interface{}) {
 	var post Post
 	mapstructure.Decode(data, &post)
 	go func() {
+		post.CreatedAt = time.Now()
 		r.Table("posts").
 			Insert(post).
 			Exec(client.session)
@@ -41,8 +44,27 @@ func SubscribeFeed(client *Client, data interface{}) {
 	}()
 }
 
-func unsubscribeChannel(client *Client, data interface{}) {
+func unsubscribeFeed(client *Client, data interface{}) {
 	client.StopForKey(ChannelStop)
+}
+
+func SubscribePosts(client *Client, data interface{}) {
+	go func() {
+		eventData := data.(map[string]interface{})
+		val, _ := eventData["feedId"]
+		feedID, _ := val.(string)
+		stop := client.NewStopChannel(MessageStop)
+		cursor, _ := r.Table("posts").
+			// OrderBy(r.OrderByOpts{r.Desc("createdAt")}).
+			Filter(r.Row.Field("feedId").Eq(feedID)).
+			Changes(r.ChangesOpts{IncludeInitial: true}).
+			Run(client.session)
+		changeFeedHelper(cursor, "post", client.send, stop)
+	}()
+}
+
+func unsubscribePosts(client *Client, data interface{}) {
+	client.StopForKey(MessageStop)
 }
 
 func changeFeedHelper(cursor *r.Cursor, changeEventName string,
