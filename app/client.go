@@ -17,11 +17,11 @@ type Client struct {
 	stopChannels map[int]chan bool
 }
 
-func NewClient(socket *websocket.Conn, handlers map[string]Handler, session *r.Session) *Client {
+func NewClient(params ...interface{}) *Client {
 	return &Client{
-		socket:       socket,
-		handlers:     handlers,
-		session:      session,
+		socket:       params[0].(*websocket.Conn),
+		handlers:     params[1].(map[string]Handler),
+		session:      params[2].(*r.Session),
 		send:         make(chan Message),
 		stopChannels: make(map[int]chan bool),
 	}
