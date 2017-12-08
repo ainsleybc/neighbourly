@@ -11,15 +11,7 @@ import (
 	"github.com/posener/wstest"
 )
 
-// "encoding/json"
-// "fmt"
-// "testing"
-// "time"
-
-// r "github.com/dancannon/gorethink"
-// "github.com/posener/wstest"
-
-func TestSubscribeFeed(t *testing.T) {
+func TestSubscribePost(t *testing.T) {
 
 	// // connect to rethinkDB
 	session, _ := r.Connect(r.ConnectOpts{
@@ -31,7 +23,7 @@ func TestSubscribeFeed(t *testing.T) {
 	defer session.Close()
 
 	// create the tables for test
-	r.TableCreate("feed").RunWrite(session)
+	r.TableCreate("posts").RunWrite(session)
 
 	// new router
 	testRouter := NewRouter(session)
@@ -47,31 +39,34 @@ func TestSubscribeFeed(t *testing.T) {
 		t.Errorf("resp.StatusCode: %q, want: %q", got, want)
 	}
 
-	// register handler for addFeed message
-	testRouter.RegisterHandler("feed subscribe", SubscribeFeed)
+	// register handler for post subscribe message
+	testRouter.RegisterHandler("post subscribe", SubscribePosts)
 
 	// creating test message and passing it through websocket
-	rawMessage := json.RawMessage(`{"name":"feed subscribe"}`)
+	rawMessage := json.RawMessage(`{"name":"post subscribe","data":{"feedId": "123hhsj111"}}`)
 	conn.WriteJSON(rawMessage)
 
-	// create feed & add to database
-	feed := &Feed{
-		Address: "Makers Academy",
+	// create post & add to database
+	post := &Post{
+		Name:      "Jon",
+		CreatedAt: time.Now(),
+		Text:      "Subscribing!",
+		FeedID:    "123hhsj111",
 	}
-	r.Table("feed").Insert(feed).RunWrite(session)
+	r.Table("posts").Insert(post).RunWrite(session)
 
 	// simple timeout to allow to database writes
 	time.Sleep(time.Second * 1)
 
 	// readJSON from socket
-	var output Message
+	var output Post
 	conn.ReadJSON(&output)
 
 	// write assertion
-	got2, want2 := output.Name, "feed add"
+	got2, want2 := output.Name, "post add"
 	if got2 != want2 {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
 
-	r.TableDrop("feed").Wait().Exec(session)
+	r.TableDrop("posts").Wait().Exec(session)
 }
