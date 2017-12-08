@@ -1,9 +1,8 @@
-package app
+package app_test
 
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 	"testing"
 	"time"
 
@@ -11,13 +10,6 @@ import (
 	r "github.com/dancannon/gorethink"
 	"github.com/posener/wstest"
 )
-
-func TestMain(m *testing.M) {
-	// test set up
-	result := m.Run()
-	// test tear down
-	os.Exit(result)
-}
 
 func TestAddFeed(t *testing.T) {
 
@@ -51,8 +43,6 @@ func TestAddFeed(t *testing.T) {
 	// register handler for addFeed message
 	testRouter.RegisterHandler("feed add", AddFeed)
 
-	// testRouter.RegisterHandler("feed add", addFeed)
-
 	// creating test message and passing it through websocket
 	rawMessage := json.RawMessage(`{"name":"feed add", ` +
 		`"data":{"Address":"Makers Academy"}}`)
@@ -79,5 +69,3 @@ func TestAddFeed(t *testing.T) {
 	}
 	r.TableDrop("feed").Wait().Exec(session)
 }
-
-// read assertion needed

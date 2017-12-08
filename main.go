@@ -17,6 +17,7 @@ func main() {
 	router := app.NewRouter(session)
 
 	router.RegisterHandler("feed add", app.AddFeed)
+	router.RegisterHandler("feed subscribe", app.SubscribeFeed)
 
 	http.Handle("/", router)
 	http.ListenAndServe(":4000", nil)
