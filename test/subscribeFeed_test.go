@@ -41,7 +41,6 @@ func TestSubscribeFeed(t *testing.T) {
 
 	// open websocket connection (skip error)
 	conn, resp, _ := d.Dial("ws://localhost:4000", nil)
-	defer conn.Close()
 
 	got, want := resp.StatusCode, http.StatusSwitchingProtocols
 	if got != want {
