@@ -5,7 +5,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-func addFeed(client *Client, data interface{}) {
+func AddFeed(client *Client, data interface{}) {
 	var feed Feed
 	mapstructure.Decode(data, &feed)
 	go func() {

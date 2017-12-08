@@ -11,20 +11,25 @@ type Handle func(*Client, Message)
 
 type Client struct {
 	socket       *websocket.Conn
-	Handle       Handle
+	handlers     map[string]Handler
 	session      *r.Session
 	send         chan Message
 	stopChannels map[int]chan bool
 }
 
-func NewClient(socket *websocket.Conn, handle Handle, session *r.Session) *Client {
+func NewClient(socket *websocket.Conn, handlers map[string]Handler, session *r.Session) *Client {
 	return &Client{
 		socket:       socket,
-		Handle:       handle,
+		handlers:     handlers,
 		session:      session,
 		send:         make(chan Message),
 		stopChannels: make(map[int]chan bool),
 	}
+}
+
+func (c *Client) Handle(msg Message) {
+	handler := c.handlers[msg.Name]
+	handler(c, msg.Data)
 }
 
 func (c *Client) Close() {
@@ -41,7 +46,7 @@ func (c *Client) Read() {
 			fmt.Printf("%v\n", err)
 			break
 		}
-		c.Handle(c, message)
+		c.Handle(message)
 	}
 	c.socket.Close()
 }

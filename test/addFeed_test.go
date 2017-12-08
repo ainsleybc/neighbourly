@@ -49,6 +49,8 @@ func TestAddFeed(t *testing.T) {
 	}
 
 	// register handler for addFeed message
+	testRouter.RegisterHandler("feed add", AddFeed)
+
 	// testRouter.RegisterHandler("feed add", addFeed)
 
 	// creating test message and passing it through websocket
