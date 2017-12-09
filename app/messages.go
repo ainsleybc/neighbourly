@@ -8,11 +8,12 @@ type Message struct {
 }
 
 type User struct {
-	ID       string `gorethink:"id,omitempty"`
-	Username string `gorethink:"username,omitempty"`
-	Email    string `gorethink:"email,omitempty"`
-	Postcode string `gorethink:"postcode,omitempty"`
-	Password string `gorethink:"password,omitempty"`
+	ID          string `gorethink:"id,omitempty"`
+	Username    string `gorethink:"username,omitempty"`
+	Email       string `gorethink:"email,omitempty"`
+	Postcode    string `gorethink:"postcode,omitempty"`
+	Password    string `gorethink:"password,omitempty"`
+	DefaultFeed string `gorethink:"defaultFeed,omitempty"`
 }
 
 type Feed struct {
