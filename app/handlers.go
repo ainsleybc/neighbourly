@@ -60,7 +60,7 @@ func AddFeed(client *Client, data interface{}) {
 	var feed Feed
 	mapstructure.Decode(data, &feed)
 	go func() {
-		r.Table("feed").
+		r.Table("feeds").
 			Insert(feed).
 			Exec(client.session)
 	}()
@@ -80,7 +80,7 @@ func AddPost(client *Client, data interface{}) {
 func SubscribeFeed(client *Client, data interface{}) {
 	go func() {
 		stop := client.NewStopChannel(ChannelStop)
-		cursor, _ := r.Table("feed").
+		cursor, _ := r.Table("feeds").
 			Changes(r.ChangesOpts{IncludeInitial: true}).
 			Run(client.session)
 		changeFeedHelper(cursor, "feed", client.send, stop)

@@ -31,7 +31,7 @@ func TestSubscribeFeed(t *testing.T) {
 	defer session.Close()
 
 	// create the tables for test
-	r.TableCreate("feed").RunWrite(session)
+	r.TableCreate("feeds").RunWrite(session)
 
 	// new router
 	testRouter := NewRouter(session)
@@ -58,7 +58,7 @@ func TestSubscribeFeed(t *testing.T) {
 	feed := &Feed{
 		Address: "Makers Academy",
 	}
-	r.Table("feed").Insert(feed).RunWrite(session)
+	r.Table("feeds").Insert(feed).RunWrite(session)
 
 	// simple timeout to allow to database writes
 	time.Sleep(time.Second * 1)
@@ -73,5 +73,5 @@ func TestSubscribeFeed(t *testing.T) {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
 
-	r.TableDrop("feed").Wait().Exec(session)
+	r.TableDrop("feeds").Wait().Exec(session)
 }
