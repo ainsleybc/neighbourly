@@ -68,5 +68,16 @@ func TestSignUpUser(t *testing.T) {
 	if got2 != want2 {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
+
+	// read from socket
+	var output Message
+	conn.ReadJSON(&output)
+
+	// write assertion
+	got2, want2 = output.Name, "user created, logged in"
+	if got2 != want2 {
+		t.Errorf("got: %v, want: %v", got2, want2)
+	}
+
 	r.TableDrop("users").Wait().Exec(session)
 }
