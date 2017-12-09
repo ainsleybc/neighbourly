@@ -25,12 +25,11 @@ func SignUpUser(client *Client, data interface{}) {
 	AddFeed(client, feed)
 	cursor, _ := r.Table("feeds").
 		Filter(r.Row.
-			Field("postcode").
+			Field("address").
 			Eq(user.Postcode)).
 		Run(client.session)
 	cursor.Next(&feed)
 	user.DefaultFeed = feed.ID
-
 	err := r.Table("users").
 		Insert(user).
 		Exec(client.session)
@@ -42,8 +41,9 @@ func SignUpUser(client *Client, data interface{}) {
 	client.send <- Message{
 		Name: "user created, logged in",
 		Data: map[string]string{
-			"email":    user.Email,
-			"username": user.Username,
+			"email":       user.Email,
+			"username":    user.Username,
+			"defaultFeed": user.DefaultFeed,
 		},
 	}
 }
@@ -65,8 +65,9 @@ func LoginUser(client *Client, data interface{}) {
 	client.send <- Message{
 		Name: "login successful",
 		Data: map[string]string{
-			"email":    user.Email,
-			"username": user.Username,
+			"email":       user.Email,
+			"username":    user.Username,
+			"defaultFeed": user.DefaultFeed,
 		},
 	}
 }
@@ -74,11 +75,9 @@ func LoginUser(client *Client, data interface{}) {
 func AddFeed(client *Client, data interface{}) {
 	var feed Feed
 	mapstructure.Decode(data, &feed)
-	go func() {
-		r.Table("feeds").
-			Insert(feed).
-			Exec(client.session)
-	}()
+	r.Table("feeds").
+		Insert(feed).
+		Exec(client.session)
 }
 
 func AddPost(client *Client, data interface{}) {

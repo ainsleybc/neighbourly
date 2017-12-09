@@ -44,7 +44,8 @@
   "name": "user created, logged in",
   "data": {
     "email": "<email>",
-    "username": "<username>"
+    "username": "<username>",
+    "defaultFeed": "<feed id>"
   }
 }
 
@@ -52,7 +53,8 @@
   "name": "login successful",
   "data": {
     "email": "<email>",
-    "username": "<username>"
+    "username": "<username>",
+    "defaultFeed": "<feed id>"    
   }
 }
 
