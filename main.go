@@ -16,6 +16,9 @@ func main() {
 
 	router := app.NewRouter(session)
 
+	router.RegisterHandler("user signup", app.SignUpUser)
+	router.RegisterHandler("user login", app.LoginUser)
+
 	router.RegisterHandler("post add", app.AddPost)
 	router.RegisterHandler("post subscribe", app.SubscribeFeed)
 
@@ -24,5 +27,4 @@ func main() {
 
 	http.Handle("/", router)
 	http.ListenAndServe(":4000", nil)
-
 }

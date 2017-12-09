@@ -59,7 +59,7 @@ func TestSubscribePost(t *testing.T) {
 	time.Sleep(time.Second * 1)
 
 	// readJSON from socket
-	var output Post
+	var output Message
 	conn.ReadJSON(&output)
 
 	// write assertion

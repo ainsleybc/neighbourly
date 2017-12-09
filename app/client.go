@@ -10,6 +10,7 @@ import (
 type Handle func(*Client, Message)
 
 type Client struct {
+	user         User
 	socket       *websocket.Conn
 	handlers     map[string]Handler
 	session      *r.Session

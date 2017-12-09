@@ -5,6 +5,7 @@ import (
 
 	r "github.com/dancannon/gorethink"
 	"github.com/mitchellh/mapstructure"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -12,6 +13,36 @@ const (
 	UserStop
 	MessageStop
 )
+
+func SignUpUser(client *Client, data interface{}) {
+	var user User
+	mapstructure.Decode(data, &user)
+	hash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	user.Password = string(hash)
+	err := r.Table("users").
+		Insert(user).
+		Exec(client.session)
+	if err != nil {
+		client.send <- Message{Name: "signup unsuccesful"}
+	}
+	client.user = user
+	client.send <- Message{Name: "user created, logged in"}
+}
+
+func LoginUser(client *Client, data interface{}) {
+	var login map[string]string
+	var user User
+	mapstructure.Decode(data, &login)
+	cursor, _ := r.Table("users").
+		Filter(r.Row.Field("email").
+			Eq(login["email"])).
+		Run(client.session)
+	cursor.Next(&user)
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(login["password"])); err != nil {
+		client.send <- Message{Name: "incorrect credentials"}
+	}
+	client.send <- Message{Name: "login successful"}
+}
 
 func AddFeed(client *Client, data interface{}) {
 	var feed Feed
