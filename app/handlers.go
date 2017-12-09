@@ -5,6 +5,7 @@ import (
 
 	r "github.com/dancannon/gorethink"
 	"github.com/mitchellh/mapstructure"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -12,6 +13,17 @@ const (
 	UserStop
 	MessageStop
 )
+
+func SignUpUser(client *Client, data interface{}) {
+	var user User
+	mapstructure.Decode(data, &user)
+	hash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	user.Password = string(hash)
+	r.Table("users").
+		Insert(user).
+		Exec(client.session)
+	client.user = user
+}
 
 func AddFeed(client *Client, data interface{}) {
 	var feed Feed
