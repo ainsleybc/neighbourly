@@ -25,6 +25,10 @@
     Address: "name"
   }
 }
+
+{
+  name: "feed subscribe"
+}
 ```
 
 #### server -> client
@@ -33,7 +37,7 @@
 {
   name: "feed add",
   data: {
-    ID: "<feed id>"
+    ID: "<feed id>",
     Address: "<feed name>"
   }
 }
@@ -47,10 +51,17 @@
 {
   name: "add post",
   data: {
-    Name: "<post name>"
-    Text: "<post text>"
+    Name: "<post name>",
+    Text: "<post text>",
     FeedID: "<feed id>"
   }
+}
+
+{
+  name: "post subscribe",
+  data: {
+    feedId: "<feed id>"
+    }
 }
 
 ```
@@ -61,10 +72,10 @@
 {
   name: "add post",
   data: {
-    ID: "<post id>"
-    CreatedAt: "<post createAt timestamp>"
-    Name: "<post name>"
-    Text: "<post text>"
+    ID: "<post id>",
+    CreatedAt: "<post createAt timestamp>",
+    Name: "<post name>",
+    Text: "<post text>",
     FeedID: "<feed id>"
   }
 }
