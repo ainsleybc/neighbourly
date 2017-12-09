@@ -26,7 +26,13 @@ func SignUpUser(client *Client, data interface{}) {
 		client.send <- Message{Name: "signup unsuccesful"}
 	}
 	client.user = user
-	client.send <- Message{Name: "user created, logged in"}
+	client.send <- Message{
+		Name: "user created, logged in",
+		Data: map[string]string{
+			"email":    user.Email,
+			"username": user.Username,
+		},
+	}
 }
 
 func LoginUser(client *Client, data interface{}) {
@@ -41,7 +47,13 @@ func LoginUser(client *Client, data interface{}) {
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(login["password"])); err != nil {
 		client.send <- Message{Name: "incorrect credentials"}
 	}
-	client.send <- Message{Name: "login successful"}
+	client.send <- Message{
+		Name: "login successful",
+		Data: map[string]string{
+			"email":    user.Email,
+			"username": user.Username,
+		},
+	}
 }
 
 func AddFeed(client *Client, data interface{}) {
