@@ -24,6 +24,7 @@ func TestSignUpUser(t *testing.T) {
 
 	// create the tables for test
 	r.TableCreate("users").RunWrite(session)
+	r.TableCreate("feeds").RunWrite(session)
 
 	// new router
 	testRouter := NewRouter(session)
@@ -80,4 +81,5 @@ func TestSignUpUser(t *testing.T) {
 	}
 
 	r.TableDrop("users").Wait().Exec(session)
+	r.TableDrop("feeds").Wait().Exec(session)
 }

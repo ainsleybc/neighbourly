@@ -23,7 +23,7 @@ func TestAddFeed(t *testing.T) {
 	defer session.Close()
 
 	// create the tables for test
-	r.TableCreate("feed").RunWrite(session)
+	r.TableCreate("feeds").RunWrite(session)
 
 	// new router
 	testRouter := NewRouter(session)
@@ -55,7 +55,7 @@ func TestAddFeed(t *testing.T) {
 	time.Sleep(time.Second * 1)
 
 	// write assertion
-	res, err := r.Table("feed").Nth(0).Run(session)
+	res, err := r.Table("feeds").Nth(0).Run(session)
 
 	var row map[string]string
 	var david string
@@ -67,5 +67,5 @@ func TestAddFeed(t *testing.T) {
 	if got2 != want2 {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
-	r.TableDrop("feed").Wait().Exec(session)
+	r.TableDrop("feeds").Wait().Exec(session)
 }

@@ -19,6 +19,18 @@ func SignUpUser(client *Client, data interface{}) {
 	mapstructure.Decode(data, &user)
 	hash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	user.Password = string(hash)
+	feed := &Feed{
+		Address: user.Postcode,
+	}
+	AddFeed(client, feed)
+	cursor, _ := r.Table("feeds").
+		Filter(r.Row.
+			Field("postcode").
+			Eq(user.Postcode)).
+		Run(client.session)
+	cursor.Next(&feed)
+	user.DefaultFeed = feed.ID
+
 	err := r.Table("users").
 		Insert(user).
 		Exec(client.session)
@@ -63,7 +75,7 @@ func AddFeed(client *Client, data interface{}) {
 	var feed Feed
 	mapstructure.Decode(data, &feed)
 	go func() {
-		r.Table("feed").
+		r.Table("feeds").
 			Insert(feed).
 			Exec(client.session)
 	}()
@@ -83,7 +95,7 @@ func AddPost(client *Client, data interface{}) {
 func SubscribeFeed(client *Client, data interface{}) {
 	go func() {
 		stop := client.NewStopChannel(ChannelStop)
-		cursor, _ := r.Table("feed").
+		cursor, _ := r.Table("feeds").
 			Changes(r.ChangesOpts{IncludeInitial: true}).
 			Run(client.session)
 		changeFeedHelper(cursor, "feed", client.send, stop)
