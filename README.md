@@ -55,7 +55,9 @@ Database
 #### External packages
 - [GoRethink](https://github.com/GoRethink/gorethink): RethinkDB Driver for Go
 - [wstest](https://github.com/posener/wstest): Client for testing WebSocket connections in Go
-
+- [Gorilla websocket](https://github.com/gorilla/websocket): A Websocket implementation for Go
+- [Map Structure](https://github.com/mitchellh/mapstructure): A Go library for decoding map values into structs
+- [Bcrypt](https://godoc.org/golang.org/x/crypto/bcrypt): Adaptive hasing algorithm for passwords
 
 
 ## File Manifest
