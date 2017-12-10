@@ -16,6 +16,20 @@ Neighbour.ly was produced as part of a wider challenge to learn how to use Go wi
 - Lucas Salmins
 - Ainsley Chang
 
+## Technologies used
+
+#### Go
+Main server-side language
+
+#### RethinkDB
+Database
+
+#### External packages
+- [GoRethink](https://github.com/GoRethink/gorethink): RethinkDB Driver for Go
+- [wstest](https://github.com/posener/wstest): Client for testing WebSocket connections in Go
+
+
+
 ## File Manifest
 
 ```
