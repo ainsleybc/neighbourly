@@ -7,23 +7,26 @@ import (
 	"time"
 
 	. "github.com/ainsleybc/neighbourly/app"
+	"github.com/ainsleybc/neighbourly/db"
 	r "github.com/dancannon/gorethink"
 	"github.com/posener/wstest"
 )
 
 func TestSubscribePost(t *testing.T) {
 
+	t.Parallel()
+
+	db.Setup("subscribePost")
+	defer db.CleanUp("subscribePost")
+
 	// // connect to rethinkDB
 	session, _ := r.Connect(r.ConnectOpts{
 		Address:  "localhost:28015",
-		Database: "test",
+		Database: "subscribePost",
 	})
 
 	// close session on end test
 	defer session.Close()
-
-	// create the tables for test
-	r.TableCreate("posts").RunWrite(session)
 
 	// new router
 	testRouter := NewRouter(session)
@@ -68,5 +71,4 @@ func TestSubscribePost(t *testing.T) {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
 
-	r.TableDrop("posts").Wait().Exec(session)
 }
