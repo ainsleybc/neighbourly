@@ -56,8 +56,6 @@ func TestLoginUser(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	conn.Close() // end session
-
 	// simple timeout to allow to database writes
 	time.Sleep(time.Second * 1)
 
