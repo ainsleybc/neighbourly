@@ -7,34 +7,41 @@ import (
 	r "github.com/dancannon/gorethink"
 )
 
-var session *r.Session
-
-func connect() {
-	session, _ = r.Connect(r.ConnectOpts{
-		Address: "localhost:28015",
-	})
+type opts struct {
+	session *r.Session
+	db      string
+	table   string
+	pK      string
+	index   string
 }
 
-func close() {
-	session.Close()
+func connect() *r.Session {
+	session, _ := r.Connect(r.ConnectOpts{
+		Address: "localhost:28015",
+	})
+	return session
 }
 
 // createDB Creates a db with the given name
 // It will exit if an error occurs
-func createDB(dbName string) {
+func createDB(opts opts) {
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Fprintf(os.Stderr, "Exception: %v\n", err)
 			os.Exit(1)
 		}
 	}()
-	r.DBCreate(dbName).RunWrite(session)
+	r.DBCreate(opts.db).RunWrite(opts.session)
 }
 
 // CreateTable creates the tables feeds, posts, and users
 // required for the application to run
-func createTable(dbName string, tableName string) {
-	_, err := r.DB(dbName).TableCreate(tableName).RunWrite(session)
+func createTable(opts opts) {
+	_, err := r.DB(opts.db).
+		TableCreate(opts.table, r.TableCreateOpts{
+			PrimaryKey: opts.pK,
+		}).
+		RunWrite(opts.session)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Exception: %v\n", err)
 		os.Exit(1)
@@ -42,8 +49,8 @@ func createTable(dbName string, tableName string) {
 }
 
 // TablesDrop drops the tables feeds, posts and users
-func dropTable(dbName string, tableName string) {
-	_, err := r.DB(dbName).TableDrop(tableName).RunWrite(session)
+func dropTable(opts opts) {
+	_, err := r.DB(opts.db).TableDrop(opts.table).RunWrite(opts.session)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Exception: %v\n", err)
 		os.Exit(1)
@@ -51,27 +58,39 @@ func dropTable(dbName string, tableName string) {
 }
 
 //DbDrop drops the give database and handles error exiting if there are any
-func dropDB(dbName string) {
+func dropDB(opts opts) {
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Fprintf(os.Stderr, "Exception: %v\n", err)
 			os.Exit(1)
 		}
 	}()
-	r.DBDrop(dbName).RunWrite(session)
+	r.DBDrop(opts.db).RunWrite(opts.session)
+}
+
+func createIndex(opts opts) {
+	r.Table(opts.table).IndexCreate(opts.index).RunWrite(opts.session)
 }
 
 func Setup(dbName string) {
-	connect()
-	createDB(dbName)
-	createTable(dbName, "users")
-	createTable(dbName, "feeds")
-	createTable(dbName, "posts")
-	close()
+	session := connect()
+
+	createDB(opts{session: session, db: dbName})
+
+	createTable(opts{session: session, db: dbName, table: "users", pK: "email"})
+	createTable(opts{session: session, db: dbName, table: "addresses", pK: "postcode"})
+	createTable(opts{session: session, db: dbName, table: "feedAddresses"})
+	createTable(opts{session: session, db: dbName, table: "feeds"})
+	createTable(opts{session: session, db: dbName, table: "posts"})
+
+	createIndex(opts{session: session, db: dbName, table: "feedAddresses", index: "feed"})
+	createIndex(opts{session: session, db: dbName, table: "feedAddresses", index: "address"})
+
+	session.Close()
 }
 
 func CleanUp(dbName string) {
-	connect()
-	dropDB(dbName)
-	close()
+	session := connect()
+	dropDB(opts{session: session, db: dbName})
+	session.Close()
 }

@@ -58,16 +58,21 @@ func TestSignUpUser(t *testing.T) {
 	// simple timeout to allow to database writes
 	time.Sleep(time.Second * 1)
 
-	// write assertion
+	// check users table for user
 	res, err := r.Table("users").Nth(0).Run(session)
-
-	var row map[string]string
-	var david string
+	var user map[string]string
 	// res.One(&row) <- try and use this thing
-	for res.Next(&row) {
-		david = row["username"]
+	res.Next(&user)
+	got2, want2 := user["username"], "david"
+	if got2 != want2 {
+		t.Errorf("got: %v, want: %v", got2, want2)
 	}
-	got2, want2 := david, "david"
+
+	// check adresses table fore address
+	var addr map[string]string
+	res, err = r.Table("addresses").Nth(0).Run(session)
+	res.Next(&addr)
+	got2, want2 = addr["postcode"], "wa12bj"
 	if got2 != want2 {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
