@@ -1,0 +1,40 @@
+language: go
+
+go:
+  - 1.9
+  - master 
+
+matrix:
+  allow_failures:
+    - go: master
+
+  fast_finish: true
+
+notifications:
+  email: false
+
+
+before_script:
+  - source /etc/lsb-release && echo "deb http://download.rethinkdb.com/apt $DISTRIB_CODENAME main" | sudo tee /etc/apt/sources.list.d/rethinkdb.list
+  - wget -qO- http://download.rethinkdb.com/apt/pubkey.gpg | sudo apt-key add -
+  - sudo apt-get update
+  - sudo apt-get install rethinkdb
+  - rethinkdb > /dev/null 2>&1 &
+  - rethinkdb --port-offset 1 --directory rethinkdb_data1 --join localhost:29016 > /dev/null 2>&1 &
+  - rethinkdb --port-offset 2 --directory rethinkdb_data2 --join localhost:29016 > /dev/null 2>&1 &
+  - rethinkdb --port-offset 3 --directory rethinkdb_data3 --join localhost:29016 > /dev/null 2>&1 &
+  - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/) # All the .go files, excluding vendor/
+  - go get github.com/ainsleybc/neighbourly/app
+  - go get github.com/ainsleybc/neighbourly/db
+  - go get github.com/ainsleybc/neighbourly/CI
+  - go get github.com/dancannon/gorethink
+  - go get github.com/gorilla/websocket
+  - go get github.com/posener/wstest
+  - go get github.com/mitchellh/mapstructure
+  - go get golang.org/x/crypto/bcrypt
+  - go run ./CI/createdb.go
+
+
+script: go test ./test/...
+
+
