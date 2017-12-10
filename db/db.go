@@ -79,12 +79,12 @@ func Setup(dbName string) {
 
 	createTable(opts{session: session, db: dbName, table: "users", pK: "email"})
 	createTable(opts{session: session, db: dbName, table: "addresses", pK: "postcode"})
-	createTable(opts{session: session, db: dbName, table: "addressFeeds"})
+	createTable(opts{session: session, db: dbName, table: "feedAddresses"})
 	createTable(opts{session: session, db: dbName, table: "feeds"})
 	createTable(opts{session: session, db: dbName, table: "posts"})
 
-	createIndex(opts{session: session, db: dbName, table: "addressFeeds", index: "feed"})
-	createIndex(opts{session: session, db: dbName, table: "addressFeeds", index: "address"})
+	createIndex(opts{session: session, db: dbName, table: "feedAddresses", index: "feed"})
+	createIndex(opts{session: session, db: dbName, table: "feedAddresses", index: "address"})
 
 	session.Close()
 }
