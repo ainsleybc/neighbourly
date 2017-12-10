@@ -7,24 +7,26 @@ import (
 	"time"
 
 	. "github.com/ainsleybc/neighbourly/app"
+	"github.com/ainsleybc/neighbourly/db"
 	r "github.com/dancannon/gorethink"
 	"github.com/posener/wstest"
 )
 
 func TestLoginUser(t *testing.T) {
 
+	t.Parallel()
+
+	db.Setup("loginUser")
+	defer db.CleanUp("loginUser")
+
 	// connect to rethinkDB
 	session, _ := r.Connect(r.ConnectOpts{
 		Address:  "localhost:28015",
-		Database: "test",
+		Database: "loginUser",
 	})
 
 	// close session on end test
 	defer session.Close()
-
-	// create the tables for test
-	r.TableCreate("users").RunWrite(session)
-	r.TableCreate("feeds").RunWrite(session)
 
 	// new router
 	testRouter := NewRouter(session)
@@ -82,6 +84,4 @@ func TestLoginUser(t *testing.T) {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
 
-	r.TableDrop("users").Wait().Exec(session)
-	r.TableDrop("feeds").Wait().Exec(session)
 }

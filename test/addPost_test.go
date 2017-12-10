@@ -8,6 +8,7 @@ import (
 	"time"
 
 	. "github.com/ainsleybc/neighbourly/app"
+	"github.com/ainsleybc/neighbourly/db"
 	r "github.com/dancannon/gorethink"
 	"github.com/posener/wstest"
 )
@@ -18,19 +19,20 @@ func TestMain(m *testing.M) {
 	// test tear down
 	os.Exit(result)
 }
-
 func TestAddPost(t *testing.T) {
+
+	t.Parallel()
+
+	db.Setup("addPost")
+	defer db.CleanUp("addPost")
 
 	session, _ := r.Connect(r.ConnectOpts{
 		Address:  "localhost:28015",
-		Database: "test",
+		Database: "addPost",
 	})
 
 	// close session on end test
 	defer session.Close()
-
-	// create the tables for test
-	r.TableCreate("posts").RunWrite(session)
 
 	// new router
 	testPostRouter := NewRouter(session)
@@ -92,7 +94,5 @@ func TestAddPost(t *testing.T) {
 	if got2 != want2 {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}
-
-	r.TableDrop("posts").Wait().Exec(session)
 
 }
