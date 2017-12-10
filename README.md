@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ainsleybc/neighbourly.svg?branch=master)](https://travis-ci.org/ainsleybc/neighbourly)
+
 # Neighbour.ly: Server
 
 ## Overview
