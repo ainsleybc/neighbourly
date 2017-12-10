@@ -1,4 +1,4 @@
-package db_setup
+package dbSetup
 
 import (
 	"fmt"
@@ -9,7 +9,8 @@ import (
 
 var session *r.Session
 
-const DBNAME = "neighbourly"
+//DBname is the default application's db name
+const DBname = "neighbourly"
 
 func init() {
 	session, _ = r.Connect(r.ConnectOpts{
