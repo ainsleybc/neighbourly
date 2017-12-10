@@ -22,22 +22,29 @@ func SignUpUser(client *Client, data interface{}) {
 	feed := &Feed{
 		Address: user.Postcode,
 	}
-	// insert address // TODO - insert if not exists - will currently error
-	r.Table("addresses").
-		Insert(map[string]string{"postcode": user.Postcode}).
+
+	// default feed
+	// TODO - create a separate method - insert if not exists, otherwise fetch - will currently error
+	r.Table("addresses"). //create address
+				Insert(map[string]string{"postcode": user.Postcode}).
+				RunWrite(client.session)
+
+	resp, _ := r.Table("feeds"). // create new feed
+					Insert(feed).
+					RunWrite(client.session)
+
+	defaultFeed := resp.GeneratedKeys[0]
+
+	feedAddress := &FeedAddress{ // link the feed & address
+		Feed:    defaultFeed,
+		Address: user.Postcode,
+	}
+	r.Table("feedAddresses").
+		Insert(feedAddress).
 		RunWrite(client.session)
 
-	// create new feed
-	AddFeed(client, feed)
-
-	// find feed for address
-	cursor, _ := r.Table("feeds").
-		Filter(r.Row.
-			Field("address").
-			Eq(user.Postcode)).
-		Run(client.session)
-	cursor.Next(&feed)
-	user.DefaultFeed = feed.ID
+	// assign default feed
+	user.DefaultFeed = defaultFeed
 
 	// insert new user
 	err := r.Table("users").
