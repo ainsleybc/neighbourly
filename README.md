@@ -16,6 +16,18 @@ Neighbour.ly was produced as part of a wider challenge to learn how to use Go wi
 - Lucas Salmins
 - Ainsley Chang
 
+## Instructions
+
+Go must be installed and your workspace configured to use this repo. For instructions on this, [click here](https://golang.org/doc/install).
+
+### Running Tests
+
+```
+$ go get github.com/ainsleybc/neighbourly
+$ cd src/github.com/ainsleybc/neighbourly
+$ go test
+```
+
 ## Technologies used
 
 #### Go
@@ -36,7 +48,6 @@ Database
 |-- neighbourly
     |-- README.md
     |-- integration.md
-    |-- junk.go
     |-- main.go
     |-- app
     |   |-- client.go
