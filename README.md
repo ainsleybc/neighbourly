@@ -1,3 +1,11 @@
+# Neighbour.ly: Server
+
+## Overview
+This is the back-end of Neighbour.ly, a communications app produced as part of our final two-week project of Makers Academy.
+
+To see the ReactJS front-end, [click here](https://github.com/alexiscarlier/neighbourly-app).
+
+Neighbour.ly was produced as part of a wider challenge to learn how to use Go without prior knowledge. To see a record of our learning process and how we came to build Neighbour.ly, [click here](https://github.com/haletothewood/LearningGoAndReact)
 
 ## Authors
 
