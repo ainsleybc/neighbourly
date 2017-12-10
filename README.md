@@ -15,3 +15,28 @@ Neighbour.ly was produced as part of a wider challenge to learn how to use Go wi
 - Jon Sanders
 - Lucas Salmins
 - Ainsley Chang
+
+## File Manifest
+
+```
+|-- neighbourly
+    |-- README.md
+    |-- integration.md
+    |-- junk.go
+    |-- main.go
+    |-- app
+    |   |-- client.go
+    |   |-- handlers.go
+    |   |-- messages.go
+    |   |-- router.go
+    |-- test
+        |-- LoginUser_test.go
+        |-- addFeed_test.go
+        |-- addPost_test.go
+        |-- signUpUser_test.go
+        |-- subscribeFeed_test.go
+        |-- subscribePost_test.go
+        |-- rethinkdb_data
+            |-- log_file
+            |-- metadata
+```
