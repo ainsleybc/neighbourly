@@ -12,6 +12,7 @@ type opts struct {
 	db      string
 	table   string
 	pK      string
+	index   string
 }
 
 func connect() *r.Session {
@@ -67,12 +68,24 @@ func dropDB(opts opts) {
 	r.DBDrop(opts.db).RunWrite(opts.session)
 }
 
+func createIndex(opts opts) {
+	r.Table(opts.table).IndexCreate(opts.index).RunWrite(opts.session)
+}
+
 func Setup(dbName string) {
 	session := connect()
+
 	createDB(opts{session: session, db: dbName})
+
 	createTable(opts{session: session, db: dbName, table: "users", pK: "email"})
+	createTable(opts{session: session, db: dbName, table: "addresses", pK: "postcode"})
+	createTable(opts{session: session, db: dbName, table: "addressFeeds"})
 	createTable(opts{session: session, db: dbName, table: "feeds"})
 	createTable(opts{session: session, db: dbName, table: "posts"})
+
+	createIndex(opts{session: session, db: dbName, table: "addressFeeds", index: "feed"})
+	createIndex(opts{session: session, db: dbName, table: "addressFeeds", index: "address"})
+
 	session.Close()
 }
 
