@@ -28,6 +28,22 @@ $ cd src/github.com/ainsleybc/neighbourly
 $ go test
 ```
 
+### Manually Run Server
+
+```
+$ go get github.com/ainsleybc/neighbourly
+$ cd src/github.com/ainsleybc/neighbourly
+$ go run main.go
+```
+
+With the server running, you can then manually simulate messages sent from the front-end with JavaScript, using the console in your web browser or a service like [JSBin]("https://jsbin.com").
+
+For example:
+```
+var ws = new WebSocket("ws://localhost:4000")
+ws.send('{"name": "feed add","data": {"address":"Makers Academy"}')
+```
+
 ## Technologies used
 
 #### Go
