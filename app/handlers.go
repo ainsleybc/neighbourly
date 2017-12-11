@@ -109,10 +109,19 @@ func AddPost(client *Client, data interface{}) {
 }
 
 func SubscribeFeed(client *Client, data interface{}) {
+	address := client.user.Postcode
 	go func() {
 		stop := client.NewStopChannel(ChannelStop)
-		cursor, _ := r.Table("feeds").
+		cursor, _ := r.Table("feedAddresses").
+			GetAllByIndex("address", address).
 			Changes(r.ChangesOpts{IncludeInitial: true}).
+			Map(r.Table("feeds"), func(res r.Term, feed r.Term) interface{} {
+				return res.Merge(func(row r.Term) map[string]interface{} {
+					return map[string]interface{}{
+						"new_val": r.Table("feeds").Get(row.Field("new_val").Field("feed")),
+					}
+				})
+			}).
 			Run(client.session)
 		changeFeedHelper(cursor, "feed", client.send, stop)
 	}()
