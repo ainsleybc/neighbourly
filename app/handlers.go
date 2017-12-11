@@ -20,7 +20,7 @@ func SignUpUser(client *Client, data interface{}) {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	user.Password = string(hash)
 	feed := &Feed{
-		Address: user.Postcode,
+		Name: user.Postcode,
 	}
 
 	// default feed

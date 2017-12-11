@@ -49,7 +49,7 @@ func TestAddFeed(t *testing.T) {
 
 	// creating test message and passing it through websocket
 	rawMessage := json.RawMessage(`{"name":"feed add", ` +
-		`"data":{"Address":"Makers Academy"}}`)
+		`"data":{"Name":"Makers Academy"}}`)
 
 	err = conn.WriteJSON(rawMessage)
 	if err != nil {
