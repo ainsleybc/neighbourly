@@ -61,7 +61,7 @@ func TestSubscribeFeed(t *testing.T) {
 
 	// create feed & add to database
 	feed := &Feed{
-		Address: "Makers Academy",
+		Name: "Makers Academy",
 	}
 	r.Table("feeds").Insert(feed).RunWrite(session)
 

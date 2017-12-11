@@ -24,6 +24,8 @@
   "data": {
     "username": "<username>",
     "email": "<email>",
+    "streetName": "<street name>",
+    "streetNumber": "<street number>",
     "postcode": "<postcode>",
     "password": "<password>"
   }
