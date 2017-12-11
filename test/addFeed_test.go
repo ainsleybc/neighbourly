@@ -16,6 +16,7 @@ func TestAddFeed(t *testing.T) {
 
 	t.Parallel()
 
+	db.CleanUp("addFeed")
 	db.Setup("addFeed")
 	defer db.CleanUp("addFeed")
 

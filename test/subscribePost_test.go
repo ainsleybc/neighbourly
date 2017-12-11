@@ -16,6 +16,7 @@ func TestSubscribePost(t *testing.T) {
 
 	t.Parallel()
 
+	db.CleanUp("subscribePost")
 	db.Setup("subscribePost")
 	defer db.CleanUp("subscribePost")
 

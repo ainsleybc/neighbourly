@@ -23,6 +23,7 @@ func TestAddPost(t *testing.T) {
 
 	t.Parallel()
 
+	db.CleanUp("addPost")
 	db.Setup("addPost")
 	defer db.CleanUp("addPost")
 
