@@ -95,6 +95,7 @@ func Setup(dbName string) {
 	createTable(opts{session: session, db: dbName, table: "feeds"})
 	createTable(opts{session: session, db: dbName, table: "posts"})
 
+	createIndex(opts{session: session, db: dbName, table: "posts", index: "createdAt"})
 	createIndex(opts{session: session, db: dbName, table: "feedAddresses", index: "feed"})
 	createIndex(opts{session: session, db: dbName, table: "feedAddresses", index: "address"})
 
