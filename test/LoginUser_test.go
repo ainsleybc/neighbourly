@@ -16,6 +16,7 @@ func TestLoginUser(t *testing.T) {
 
 	t.Parallel()
 
+	db.CleanUp("loginUser")
 	db.Setup("loginUser")
 	defer db.CleanUp("loginUser")
 

@@ -16,6 +16,7 @@ func TestSubscribeFeed(t *testing.T) {
 
 	t.Parallel()
 
+	db.CleanUp("subscribeFeed")
 	db.Setup("subscribeFeed")
 	defer db.CleanUp("subscribeFeed")
 
@@ -44,9 +45,18 @@ func TestSubscribeFeed(t *testing.T) {
 
 	// register handler for addFeed message
 	testRouter.RegisterHandler("feed subscribe", SubscribeFeed)
+	testRouter.RegisterHandler("user signup", SignUpUser)
+
+	// sign up a user and pass it through websocket
+	rawMessage := json.RawMessage(`{"name":"user signup", ` +
+		`"data":{"username":"david", "email":"david@david.com", "postcode":"w1abc","password":"password"}}`)
+	conn.WriteJSON(rawMessage)
+
+	var output Message
+	conn.ReadJSON(&output) // discard sign up response
 
 	// creating test message and passing it through websocket
-	rawMessage := json.RawMessage(`{"name":"feed subscribe"}`)
+	rawMessage = json.RawMessage(`{"name":"feed subscribe"}`)
 	conn.WriteJSON(rawMessage)
 
 	// create feed & add to database
@@ -59,7 +69,6 @@ func TestSubscribeFeed(t *testing.T) {
 	time.Sleep(time.Second * 1)
 
 	// readJSON from socket
-	var output Message
 	conn.ReadJSON(&output)
 
 	// write assertion
