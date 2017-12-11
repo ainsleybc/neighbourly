@@ -9,33 +9,23 @@ To see the ReactJS front-end, [click here](https://github.com/alexiscarlier/neig
 
 Neighbour.ly was produced as part of a wider challenge to learn how to use Go without prior knowledge. To see a record of our learning process and how we came to build Neighbour.ly, [click here](https://github.com/haletothewood/LearningGoAndReact)
 
-## Authors
-
-- David Halewood
-- Alexis Carlier
-- George Lamprakis
-- Jon Sanders
-- Lucas Salmins
-- Ainsley Chang
 
 ## Instructions
 
 Go must be installed and your workspace configured to use this repo. For instructions on this, [click here](https://golang.org/doc/install).
 
-### Running Tests
+
+### Install & run locally
 
 ```
+$ brew install gorethinkdb
+$ brew services start rethinkdb
 $ go get github.com/ainsleybc/neighbourly
 $ cd src/github.com/ainsleybc/neighbourly
-$ go test
-```
-
-### Manually Run Server
-
-```
-$ go get github.com/ainsleybc/neighbourly
-$ cd src/github.com/ainsleybc/neighbourly
-$ go run main.go
+$ go get ./...
+$ go run db/dbSetup/dbSetup.go
+$ go build
+$ ./neighbourly
 ```
 
 With the server running, you can then manually simulate messages sent from the front-end with JavaScript, using the console in your web browser or a service like [JSBin]("https://jsbin.com").
@@ -44,6 +34,12 @@ For example:
 ```
 var ws = new WebSocket("ws://localhost:4000")
 ws.send('{"name": "feed add","data": {"address":"Makers Academy"}')
+```
+
+### Test
+
+```
+$ go test -v ./...
 ```
 
 ## Technologies used
@@ -85,3 +81,12 @@ Database
             |-- log_file
             |-- metadata
 ```
+
+## Authors
+
+- [David Halewood](https://github.com/haletothewood)
+- [Alexis Carlier](https://github.com/alexiscarlier)
+- [George Lamprakis](https://github.com/mormolis)
+- [Jon Sanders](https://github.com/jonsanders101)
+- [Lucas Salmins](https://github.com/lucasasalmins)
+- [Ainsley Chang](https://github.com/ainsleybc)
