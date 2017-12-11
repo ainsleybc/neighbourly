@@ -69,7 +69,8 @@ func dropDB(opts opts) {
 }
 
 func createIndex(opts opts) {
-	r.Table(opts.table).IndexCreate(opts.index).RunWrite(opts.session)
+	r.DB(opts.db).Table(opts.table).IndexCreate(opts.index).RunWrite(opts.session)
+	r.DB(opts.db).Table(opts.table).IndexWait().Run(opts.session)
 }
 
 func Setup(dbName string) {
@@ -79,9 +80,9 @@ func Setup(dbName string) {
 
 	createTable(opts{session: session, db: dbName, table: "users", pK: "email"})
 	createTable(opts{session: session, db: dbName, table: "addresses", pK: "postcode"})
-	createTable(opts{session: session, db: dbName, table: "feedAddresses"})
-	createTable(opts{session: session, db: dbName, table: "feeds"})
-	createTable(opts{session: session, db: dbName, table: "posts"})
+	createTable(opts{session: session, db: dbName, table: "feedAddresses", pK: "id"})
+	createTable(opts{session: session, db: dbName, table: "feeds", pK: "id"})
+	createTable(opts{session: session, db: dbName, table: "posts", pK: "id"})
 
 	createIndex(opts{session: session, db: dbName, table: "feedAddresses", index: "feed"})
 	createIndex(opts{session: session, db: dbName, table: "feedAddresses", index: "address"})
