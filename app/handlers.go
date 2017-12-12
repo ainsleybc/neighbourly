@@ -117,10 +117,7 @@ func AddFeed(client *Client, data interface{}) {
 					Insert(feed).
 					RunWrite(client.session)
 
-	res, _ := r.Table("feeds").
-		Get(resp.GeneratedKeys[0]).
-		Run(client.session)
-	res.One(&feed)
+	feed.ID = resp.GeneratedKeys[0]
 
 	feedAddress := &FeedAddress{ // link the feed & address
 		Feed:    feed,
