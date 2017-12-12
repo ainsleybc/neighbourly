@@ -81,6 +81,20 @@
 {
   "name": "feed subscribe"
 }
+
+{
+  "name":"feedAddress add",
+    "data":{
+      "address":{
+        "streetNumber": "<street number>",
+        "streetName": "<street name>",
+        "postcode": "<postcode>",
+      },
+      "feed":{
+        "ID":"<feed id>"
+      }
+      }
+}
 ```
 
 #### server -> client
