@@ -30,22 +30,39 @@ func SignUpUser(client *Client, data interface{}) {
 				Insert(address).
 				RunWrite(client.session)
 
-	feed := Feed{
-		Name: strings.Join([]string{
-			address.StreetNumber,
-			address.StreetName,
-			address.Postcode},
-			" "),
+	addressPk := []string{
+		address.StreetNumber,
+		address.StreetName,
+		address.Postcode,
 	}
 
-	resp, _ := r.Table("feeds"). // create new feed
-					Insert(feed).
-					RunWrite(client.session)
+	feedName := strings.Join(addressPk, " ")
 
-	res, _ := r.Table("feeds").
-		Get(resp.GeneratedKeys[0]).
+	feed := Feed{
+		Name:           feedName,
+		AddressDefault: true,
+	}
+
+	cursor, _ := r.Table("feedAddresses").
+		GetAllByIndex("address", addressPk).
+		EqJoin("feed", r.Table("feeds")).Zip().
+		Filter(map[string]interface{}{
+			"addressDefault": true,
+		}).
 		Run(client.session)
-	res.One(&feed)
+
+	var row map[string]interface{}
+	cursor.Next(&row)
+
+	defaultFeed := row["feed"]
+
+	if defaultFeed != nil {
+		feed.ID = defaultFeed.(string)
+	} else {
+		// create new feed
+		resp, _ := r.Table("feeds").Insert(feed).RunWrite(client.session)
+		feed.ID = resp.GeneratedKeys[0]
+	}
 
 	feedAddress := &FeedAddress{ // link the feed & address
 		Feed:    feed,

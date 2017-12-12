@@ -28,8 +28,9 @@ type FeedAddress struct {
 }
 
 type Feed struct {
-	ID   string `gorethink:"id,omitempty"`
-	Name string `gorethink:"name,omitempty"`
+	ID             string `gorethink:"id,omitempty"`
+	Name           string `gorethink:"name,omitempty"`
+	AddressDefault bool   `gorethink:"addressDefault"`
 }
 
 type Post struct {
