@@ -1,67 +1,83 @@
-package app
+package app_test
 
 import (
+	"encoding/json"
 	"testing"
-	// . "github.com/ainsleybc/neighbourly/app"
+	"time"
+
+	. "github.com/ainsleybc/neighbourly/app"
+	"github.com/ainsleybc/neighbourly/db"
+	r "github.com/dancannon/gorethink"
+	"github.com/posener/wstest"
 )
 
 func TestSubscribeAddresses(t *testing.T) {
 
-	// t.Parallel()
+	t.Parallel()
 
-	// db.CleanUp("subscribeAddresses")
-	// db.Setup("subscribeAddresses")
-	// // defer db.CleanUp("subscribeAddresses")
+	db.CleanUp("subscribeAddresses")
+	db.Setup("subscribeAddresses")
+	// defer db.CleanUp("subscribeAddresses")
 
-	// // connect to rethinkDB
-	// session, _ := r.Connect(r.ConnectOpts{
-	// 	Address:  "localhost:28015",
-	// 	Database: "subscribeAddresses",
-	// })
+	// connect to rethinkDB
+	session, _ := r.Connect(r.ConnectOpts{
+		Address:  "localhost:28015",
+		Database: "subscribeAddresses",
+	})
 
-	// // close session on end test
-	// defer session.Close()
+	// close session on end test
+	defer session.Close()
 
-	// // new router
-	// testRouter := NewRouter(session)
+	// new router
+	testRouter := NewRouter(session)
 
-	// // mock server thingy
-	// d := wstest.NewDialer(testRouter, nil)
+	// mock server thingy
+	d := wstest.NewDialer(testRouter, nil)
 
 	// // open websocket connection (skip error)
-	// conn, resp, _ := d.Dial("ws://localhost:4000", nil)
+	conn, _, _ := d.Dial("ws://localhost:4000", nil)
 
-	// got, want := resp.StatusCode, http.StatusSwitchingProtocols
-	// if got != want {
-	// 	t.Errorf("resp.StatusCode: %q, want: %q", got, want)
-	// }
+	// register handler for addFeed message
+	testRouter.RegisterHandler("feedAddress add", AddFeedAddress)
+	testRouter.RegisterHandler("address subscribe", SubscribeAddress)
 
-	// // register handler for addFeed message
-	// testRouter.RegisterHandler("feed subscribe", SubscribeFeed)
-	// testRouter.RegisterHandler("user signup", SignUpUser)
+	// create test feed
+	feed := map[string]string{"name": "General Assembly"}
+	resp, _ := r.Table("feeds"). // create new feed
+					Insert(feed).
+					RunWrite(session)
+	feedID := resp.GeneratedKeys[0]
 
-	// // sign up a user and pass it through websocket
-	// rawMessage := json.RawMessage(`{"name":"user signup", ` +
-	// 	`"data":{"username":"david", "email":"david@david.com", "streetNumber":"56", "streetName":"downing", "postcode":"w1abc","password":"password"}}`)
-	// conn.WriteJSON(rawMessage)
+	// user subscribing to their address feeds
+	rawMessage := json.RawMessage(`{"name":"address subscribe", ` +
+		`"data":{"feedId":"` + feedID + `"}}`)
+	conn.WriteJSON(rawMessage)
 
-	// var output Message
-	// conn.ReadJSON(&output) // discard sign up response
+	feedAddress := FeedAddress{
+		Address: Address{
+			StreetNumber: "1",
+			StreetName:   "Makers Street",
+			Postcode:     "AL74BD",
+		},
+		Feed: Feed{
+			ID: feedID,
+		}}
 
-	// // creating test message and passing it through websocket
-	// rawMessage = json.RawMessage(`{"name":"feed subscribe"}`)
-	// conn.WriteJSON(rawMessage)
+	r.Table("feedAddresses"). // create new feed
+					Insert(feedAddress).
+					RunWrite(session)
 
-	// // simple timeout to allow to database writes
-	// time.Sleep(time.Second * 1)
+	// simple timeout to allow to database writes
+	time.Sleep(time.Second * 1)
 
 	// // readJSON from socket
-	// conn.ReadJSON(&output)
+	var output Message
+	conn.ReadJSON(&output)
 
 	// // write assertion
-	// got2, want2 := output.Name, "feed add"
-	// if got2 != want2 {
-	// 	t.Errorf("got: %v, want: %v", got2, want2)
-	// }
+	got2, want2 := output.Name, "feedAddress add"
+	if got2 != want2 {
+		t.Errorf("got: %v, want: %v", got2, want2)
+	}
 
 }
