@@ -24,6 +24,8 @@
   "data": {
     "username": "<username>",
     "email": "<email>",
+    "streetName": "<street name>",
+    "streetNumber": "<street number>",
     "postcode": "<postcode>",
     "password": "<password>"
   }
@@ -103,7 +105,10 @@
   "data": {
     "Name": "<post name>",
     "Text": "<post text>",
-    "FeedID": "<feed id>"
+    "feed":{
+      "id": "<feed id>",
+      "name": "<feed name>"
+    }
   }
 }
 

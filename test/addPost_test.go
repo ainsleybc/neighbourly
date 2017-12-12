@@ -57,7 +57,7 @@ func TestAddPost(t *testing.T) {
 
 	// creating test message and passing it through websocket
 	rawMessage := json.RawMessage(`{"name":"post add", ` +
-		`"data":{"name":"Jon", "text":"Hey Neigh!", "feedId":"123hhsj111"}}`)
+		`"data":{"name":"Jon", "text":"Hey Neigh!", "feed":{"id":"123hhsj111", "name":"makers"}}}`)
 
 	err = conn.WriteJSON(rawMessage)
 	if err != nil {
@@ -85,13 +85,6 @@ func TestAddPost(t *testing.T) {
 	expectedStr = row["text"].(string)
 
 	got2, want2 = expectedStr, "Hey Neigh!"
-	if got2 != want2 {
-		t.Errorf("got: %v, want: %v", got2, want2)
-	}
-
-	expectedStr = row["feedId"].(string)
-
-	got2, want2 = expectedStr, "123hhsj111"
 	if got2 != want2 {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}

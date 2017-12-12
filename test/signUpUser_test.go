@@ -49,7 +49,7 @@ func TestSignUpUser(t *testing.T) {
 
 	// creating test message and passing it through websocket
 	rawMessage := json.RawMessage(`{"name":"user signup", ` +
-		`"data":{"username":"david", "email":"david@david.com", "postcode":"wa12bj","password":"password"}}`)
+		`"data":{"username":"david", "email":"david@david.com", "streetNumber":"56", "streetName":"downing", "postcode":"wa12bj","password":"password"}}`)
 
 	err = conn.WriteJSON(rawMessage)
 	if err != nil {
@@ -61,7 +61,7 @@ func TestSignUpUser(t *testing.T) {
 
 	// check users table for user
 	res, err := r.Table("users").Nth(0).Run(session)
-	var user map[string]string
+	var user map[string]interface{}
 	// res.One(&row) <- try and use this thing
 	res.Next(&user)
 	got2, want2 := user["username"], "david"
@@ -70,10 +70,10 @@ func TestSignUpUser(t *testing.T) {
 	}
 
 	// check adresses table fore address
-	var addr map[string]string
+	var addr map[string][]string
 	res, err = r.Table("addresses").Nth(0).Run(session)
 	res.Next(&addr)
-	got2, want2 = addr["postcode"], "wa12bj"
+	got2, want2 = addr["address"][2], "wa12bj"
 	if got2 != want2 {
 		t.Errorf("got: %v, want: %v", got2, want2)
 	}

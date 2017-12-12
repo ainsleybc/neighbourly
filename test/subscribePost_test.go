@@ -51,11 +51,15 @@ func TestSubscribePost(t *testing.T) {
 	conn.WriteJSON(rawMessage)
 
 	// create post & add to database
+	feed := Feed{
+		ID:   "123hhsj111",
+		Name: "test Feed",
+	}
 	post := &Post{
 		Name:      "Jon",
 		CreatedAt: time.Now(),
 		Text:      "Subscribing!",
-		FeedID:    "123hhsj111",
+		Feed:      feed,
 	}
 	r.Table("posts").Insert(post).RunWrite(session)
 
