@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -211,10 +210,23 @@ func changeFeedHelper(cursor *r.Cursor, changeEventName string,
 func AddFeedAddress(client *Client, data interface{}) {
 	var feedAddress FeedAddress
 	mapstructure.Decode(data, &feedAddress)
-	fmt.Printf("HANDLER LOG %v \n", feedAddress)
 	go func() {
 		r.Table("feedAddresses").
 			Insert(feedAddress).
 			Exec(client.session)
+	}()
+}
+
+func SubscribeAddress(client *Client, data interface{}) {
+	go func() {
+		eventData := data.(map[string]interface{})
+		val, _ := eventData["feedId"]
+		feedID, _ := val.(string)
+		stop := client.NewStopChannel(MessageStop)
+		cursor, _ := r.Table("feedAddresses").
+			Filter(r.Row.Field("feed").Eq(feedID)).
+			Changes(r.ChangesOpts{IncludeInitial: true}).
+			Run(client.session)
+		changeFeedHelper(cursor, "feedAddress", client.send, stop)
 	}()
 }

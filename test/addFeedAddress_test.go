@@ -35,7 +35,7 @@ func TestAddFeedAddress(t *testing.T) {
 	d := wstest.NewDialer(testRouter, nil)
 
 	// open websocket connection (skip error)
-	conn, _, err := d.Dial("ws://localhost:4000", nil)
+	conn, _, _ := d.Dial("ws://localhost:4000", nil)
 
 	// register handler for addFeedAddress message
 	testRouter.RegisterHandler("feedAddress add", AddFeedAddress)
@@ -60,7 +60,7 @@ func TestAddFeedAddress(t *testing.T) {
 			}
 			}}`)
 
-	err = conn.WriteJSON(rawMessage)
+	err := conn.WriteJSON(rawMessage)
 	if err != nil {
 		t.Fatal(err)
 	}
