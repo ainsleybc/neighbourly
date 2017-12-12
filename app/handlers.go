@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -205,4 +206,15 @@ func changeFeedHelper(cursor *r.Cursor, changeEventName string,
 			}
 		}
 	}
+}
+
+func AddFeedAddress(client *Client, data interface{}) {
+	var feedAddress FeedAddress
+	mapstructure.Decode(data, &feedAddress)
+	fmt.Printf("HANDLER LOG %v \n", feedAddress)
+	go func() {
+		r.Table("feedAddresses").
+			Insert(feedAddress).
+			Exec(client.session)
+	}()
 }
