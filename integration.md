@@ -90,7 +90,7 @@
   "name": "feed add",
   "data": {
     "ID": "<feed id>",
-    "Address": "<feed name>"
+    "Name": "<feed name>"
   }
 }
 ```
