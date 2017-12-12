@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -113,9 +114,19 @@ func LoginUser(client *Client, data interface{}) {
 func AddFeed(client *Client, data interface{}) {
 	var feed Feed
 	mapstructure.Decode(data, &feed)
-	r.Table("feeds").
-		Insert(feed).
-		Exec(client.session)
+	resp, _ := r.Table("feeds"). // create new feed
+					Insert(feed).
+					RunWrite(client.session)
+
+	feed.ID = resp.GeneratedKeys[0]
+
+	feedAddress := &FeedAddress{ // link the feed & address
+		Feed:    feed,
+		Address: client.user.Address,
+	}
+	r.Table("feedAddresses").
+		Insert(feedAddress).
+		RunWrite(client.session)
 }
 
 func AddPost(client *Client, data interface{}) {
@@ -153,7 +164,7 @@ func SubscribeFeed(client *Client, data interface{}) {
 	}()
 }
 
-func unsubscribeFeed(client *Client, data interface{}) {
+func UnsubscribeFeed(client *Client, data interface{}) {
 	client.StopForKey(ChannelStop)
 }
 
@@ -172,7 +183,7 @@ func SubscribePosts(client *Client, data interface{}) {
 	}()
 }
 
-func unsubscribePosts(client *Client, data interface{}) {
+func UnsubscribePosts(client *Client, data interface{}) {
 	client.StopForKey(MessageStop)
 }
 
@@ -195,4 +206,15 @@ func changeFeedHelper(cursor *r.Cursor, changeEventName string,
 			}
 		}
 	}
+}
+
+func AddFeedAddress(client *Client, data interface{}) {
+	var feedAddress FeedAddress
+	mapstructure.Decode(data, &feedAddress)
+	fmt.Printf("HANDLER LOG %v \n", feedAddress)
+	go func() {
+		r.Table("feedAddresses").
+			Insert(feedAddress).
+			Exec(client.session)
+	}()
 }
