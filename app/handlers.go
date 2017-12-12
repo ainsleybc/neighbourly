@@ -113,9 +113,22 @@ func LoginUser(client *Client, data interface{}) {
 func AddFeed(client *Client, data interface{}) {
 	var feed Feed
 	mapstructure.Decode(data, &feed)
-	r.Table("feeds").
-		Insert(feed).
-		Exec(client.session)
+	resp, _ := r.Table("feeds"). // create new feed
+					Insert(feed).
+					RunWrite(client.session)
+
+	res, _ := r.Table("feeds").
+		Get(resp.GeneratedKeys[0]).
+		Run(client.session)
+	res.One(&feed)
+
+	feedAddress := &FeedAddress{ // link the feed & address
+		Feed:    feed,
+		Address: client.user.Address,
+	}
+	r.Table("feedAddresses").
+		Insert(feedAddress).
+		RunWrite(client.session)
 }
 
 func AddPost(client *Client, data interface{}) {
@@ -153,7 +166,7 @@ func SubscribeFeed(client *Client, data interface{}) {
 	}()
 }
 
-func unsubscribeFeed(client *Client, data interface{}) {
+func UnsubscribeFeed(client *Client, data interface{}) {
 	client.StopForKey(ChannelStop)
 }
 
@@ -172,7 +185,7 @@ func SubscribePosts(client *Client, data interface{}) {
 	}()
 }
 
-func unsubscribePosts(client *Client, data interface{}) {
+func UnsubscribePosts(client *Client, data interface{}) {
 	client.StopForKey(MessageStop)
 }
 
