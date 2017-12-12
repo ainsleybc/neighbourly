@@ -50,7 +50,7 @@ func TestLoginUser(t *testing.T) {
 
 	// sign up a user
 	rawMessage := json.RawMessage(`{"name":"user signup", ` +
-		`"data":{"username":"david", "email":"david@david.com", "postcode":"wa12bj","password":"password"}}`)
+		`"data":{"username":"david", "email":"david@david.com", "streetNumber":"56", "streetName":"downing", "postcode":"wa12bj","password":"password"}}`)
 
 	err = conn.WriteJSON(rawMessage)
 	if err != nil {

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"strings"
 	"time"
 
 	r "github.com/dancannon/gorethink"
@@ -16,36 +17,47 @@ const (
 
 func SignUpUser(client *Client, data interface{}) {
 	var user User
+	var address Address
 	mapstructure.Decode(data, &user)
+	mapstructure.Decode(data, &address)
+
 	hash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	user.Password = string(hash)
-	feed := &Feed{
-		Name: user.Postcode,
-	}
 
 	// default feed
 	// TODO - create a separate method - insert if not exists, otherwise fetch - will currently error
 	r.Table("addresses"). //create address
-				Insert(map[string]string{"postcode": user.Postcode}).
+				Insert(address).
 				RunWrite(client.session)
+
+	feed := Feed{
+		Name: strings.Join([]string{
+			address.StreetNumber,
+			address.StreetName,
+			address.Postcode},
+			" "),
+	}
 
 	resp, _ := r.Table("feeds"). // create new feed
 					Insert(feed).
 					RunWrite(client.session)
 
-	defaultFeed := resp.GeneratedKeys[0]
+	res, _ := r.Table("feeds").
+		Get(resp.GeneratedKeys[0]).
+		Run(client.session)
+	res.One(&feed)
 
 	feedAddress := &FeedAddress{ // link the feed & address
-		Feed:    defaultFeed,
-		Address: user.Postcode,
+		Feed:    feed,
+		Address: address,
 	}
 	r.Table("feedAddresses").
 		Insert(feedAddress).
 		RunWrite(client.session)
 
 	// assign default feed
-	user.DefaultFeed = defaultFeed
-
+	user.DefaultFeed = feed
+	user.Address = address
 	// insert new user
 	err := r.Table("users").
 		Insert(user).
@@ -60,7 +72,7 @@ func SignUpUser(client *Client, data interface{}) {
 		Data: map[string]string{
 			"email":       user.Email,
 			"username":    user.Username,
-			"defaultFeed": user.DefaultFeed,
+			"defaultFeed": user.DefaultFeed.ID,
 		},
 	}
 }
@@ -70,8 +82,17 @@ func LoginUser(client *Client, data interface{}) {
 	var user User
 	mapstructure.Decode(data, &login)
 	cursor, _ := r.Table("users").
-		Filter(r.Row.Field("email").
-			Eq(login["email"])).
+		Get(login["email"]).
+		Merge(func(p r.Term) interface{} {
+			return map[string]interface{}{
+				"defaultFeed": r.Table("feeds").Get(p.Field("defaultFeed")),
+			}
+		}).
+		Merge(func(p r.Term) interface{} {
+			return map[string]interface{}{
+				"address": r.Table("addresses").Get(p.Field("address")),
+			}
+		}).
 		Run(client.session)
 	cursor.Next(&user)
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(login["password"])); err != nil {
@@ -84,7 +105,7 @@ func LoginUser(client *Client, data interface{}) {
 		Data: map[string]string{
 			"email":       user.Email,
 			"username":    user.Username,
-			"defaultFeed": user.DefaultFeed,
+			"defaultFeed": user.DefaultFeed.ID,
 		},
 	}
 }
@@ -109,7 +130,12 @@ func AddPost(client *Client, data interface{}) {
 }
 
 func SubscribeFeed(client *Client, data interface{}) {
-	address := client.user.Postcode
+	address := []string{
+		client.user.Address.StreetNumber,
+		client.user.Address.StreetName,
+		client.user.Address.Postcode,
+	}
+
 	go func() {
 		stop := client.NewStopChannel(ChannelStop)
 		cursor, _ := r.Table("feedAddresses").
@@ -138,8 +164,8 @@ func SubscribePosts(client *Client, data interface{}) {
 		feedID, _ := val.(string)
 		stop := client.NewStopChannel(MessageStop)
 		cursor, _ := r.Table("posts").
-			// OrderBy(r.OrderByOpts{r.Desc("createdAt")}).
-			Filter(r.Row.Field("feedId").Eq(feedID)).
+			OrderBy(r.OrderByOpts{Index: r.Desc("createdAt")}).
+			Filter(r.Row.Field("feed").Eq(feedID)).
 			Changes(r.ChangesOpts{IncludeInitial: true}).
 			Run(client.session)
 		changeFeedHelper(cursor, "post", client.send, stop)

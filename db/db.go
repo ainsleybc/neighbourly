@@ -91,7 +91,7 @@ func Setup(dbName string) {
 	createDB(opts{session: session, db: dbName})
 
 	createTable(opts{session: session, db: dbName, table: "users", pK: "email"})
-	createTable(opts{session: session, db: dbName, table: "addresses", pK: "postcode"})
+	createTable(opts{session: session, db: dbName, table: "addresses", pK: "address"})
 	createTable(opts{session: session, db: dbName, table: "feedAddresses", pK: "id"})
 	createTable(opts{session: session, db: dbName, table: "feeds", pK: "id"})
 	createTable(opts{session: session, db: dbName, table: "posts", pK: "id"})

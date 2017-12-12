@@ -49,7 +49,7 @@ func TestSubscribeFeed(t *testing.T) {
 
 	// sign up a user and pass it through websocket
 	rawMessage := json.RawMessage(`{"name":"user signup", ` +
-		`"data":{"username":"david", "email":"david@david.com", "postcode":"w1abc","password":"password"}}`)
+		`"data":{"username":"david", "email":"david@david.com", "streetNumber":"56", "streetName":"downing", "postcode":"w1abc","password":"password"}}`)
 	conn.WriteJSON(rawMessage)
 
 	var output Message
@@ -58,12 +58,6 @@ func TestSubscribeFeed(t *testing.T) {
 	// creating test message and passing it through websocket
 	rawMessage = json.RawMessage(`{"name":"feed subscribe"}`)
 	conn.WriteJSON(rawMessage)
-
-	// create feed & add to database
-	feed := &Feed{
-		Name: "Makers Academy",
-	}
-	r.Table("feeds").Insert(feed).RunWrite(session)
 
 	// simple timeout to allow to database writes
 	time.Sleep(time.Second * 1)

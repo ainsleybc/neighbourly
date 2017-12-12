@@ -8,26 +8,28 @@ type Message struct {
 }
 
 type User struct {
-	Username    string `gorethink:"username,omitempty"`
-	Email       string `gorethink:"email,omitempty"`
-	Postcode    string `gorethink:"postcode,omitempty"`
-	Password    string `gorethink:"password,omitempty"`
-	DefaultFeed string `gorethink:"defaultFeed,omitempty"`
+	Email       string  `gorethink:"email,omitempty"`
+	Username    string  `gorethink:"username,omitempty"`
+	Address     Address `gorethink:"address,reference" gorethink_ref:"address"`
+	Password    string  `gorethink:"password,omitempty"`
+	DefaultFeed Feed    `gorethink:"defaultFeed,reference" gorethink_ref:"id"`
 }
 
 type Address struct {
-	Postcode string `gorethink:"postcode,omitempty"`
+	StreetNumber string `gorethink:"address[0],omitempty"`
+	StreetName   string `gorethink:"address[1],omitempty"`
+	Postcode     string `gorethink:"address[2],omitempty"`
 }
 
 type FeedAddress struct {
-	ID      string `gorethink:"id,omitempty"`
-	Address string `gorethink:"address,omitempty"`
-	Feed    string `gorethink:"feed,omitempty"`
+	ID      string  `gorethink:"id,omitempty"`
+	Address Address `gorethink:"address,reference" gorethink_ref:"address"`
+	Feed    Feed    `gorethink:"feed,reference" gorethink_ref:"id"`
 }
 
 type Feed struct {
 	ID   string `gorethink:"id,omitempty"`
-	Name string `gorethink:"address,omitempty"`
+	Name string `gorethink:"name,omitempty"`
 }
 
 type Post struct {
@@ -35,5 +37,5 @@ type Post struct {
 	Name      string    `gorethink:"name"`
 	CreatedAt time.Time `gorethink:"createdAt"`
 	Text      string    `gorethink:"text"`
-	FeedID    string    `gorethink:"feedId"`
+	Feed      Feed      `gorethink:"feed,reference" gorethink_ref:"id"`
 }
