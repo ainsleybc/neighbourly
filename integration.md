@@ -106,8 +106,7 @@
     "Name": "<post name>",
     "Text": "<post text>",
     "feed":{
-      "id": "<feed id>",
-      "name": "<feed name>"
+      "id": "<feed id>"
     }
   }
 }
