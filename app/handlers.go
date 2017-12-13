@@ -169,7 +169,6 @@ func SubscribePosts(client *Client, data interface{}) {
 			Filter(r.Row.Field("feed").Eq(feedID)).
 			Changes(r.ChangesOpts{IncludeInitial: true}).
 			Run(client.session)
-		// fmt.Printf("\n\nCursor:%v\n\n\n", cursor)
 		changeFeedHelper(cursor, "post", client.send, stop)
 	}()
 }
