@@ -45,3 +45,14 @@ func InsertUser(session *r.Session, row interface{}) (r.WriteResponse, error) {
 		RunWrite(session)
 	return resp, err
 }
+
+func GetDefaultFeedByAddress(session *r.Session, key interface{}) (*r.Cursor, error) {
+	cursor, err := r.Table(feedAddresses).
+		GetAllByIndex("address", key).
+		EqJoin("feed", r.Table(feeds)).Zip().
+		Filter(map[string]interface{}{
+			"addressDefault": true,
+		}).
+		Run(session)
+	return cursor, err
+}

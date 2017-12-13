@@ -25,8 +25,6 @@ func SignUpUser(client *Client, data interface{}) {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	user.Password = string(hash)
 
-	db.InsertAddress(client.session, address)
-
 	addressPk := []string{
 		address.StreetNumber,
 		address.StreetName,
@@ -40,23 +38,16 @@ func SignUpUser(client *Client, data interface{}) {
 		AddressDefault: true,
 	}
 
-	cursor, _ := r.Table("feedAddresses").
-		GetAllByIndex("address", addressPk).
-		EqJoin("feed", r.Table("feeds")).Zip().
-		Filter(map[string]interface{}{
-			"addressDefault": true,
-		}).
-		Run(client.session)
-
+	cursor, _ := db.GetDefaultFeedByAddress(client.session, addressPk)
 	var row map[string]interface{}
 	cursor.Next(&row)
-
 	defaultFeed := row["feed"]
 
 	if defaultFeed != nil {
 		feed.ID = defaultFeed.(string)
 	} else {
-		// create new feed
+		// create new feed & address
+		db.InsertAddress(client.session, address)
 		resp, _ := db.InsertFeed(client.session, feed)
 		feed.ID = resp.GeneratedKeys[0]
 	}
