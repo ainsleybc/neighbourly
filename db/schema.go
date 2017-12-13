@@ -1,6 +1,6 @@
 /*
 
-Package db is used for all database related commands required for setting up environments, testing & deployments
+schema.go is used for all database related commands required for setting up environments, testing & deployments
 Exported functions:
 
 - Setup(dbName string) // creates a new database & applies the schema
