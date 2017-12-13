@@ -17,7 +17,7 @@ func TestSubscribeAddresses(t *testing.T) {
 
 	db.CleanUp("subscribeAddresses")
 	db.Setup("subscribeAddresses")
-	// defer db.CleanUp("subscribeAddresses")
+	defer db.CleanUp("subscribeAddresses")
 
 	// connect to rethinkDB
 	session, _ := r.Connect(r.ConnectOpts{
