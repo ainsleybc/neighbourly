@@ -47,6 +47,7 @@ func (c *Client) Read() {
 			fmt.Printf("%v\n", err)
 			break
 		}
+		fmt.Printf("\n%v\n", message)
 		c.Handle(message)
 	}
 	c.socket.Close()
@@ -58,7 +59,11 @@ func (client *Client) Write() {
 			fmt.Printf("%v", err)
 			break
 		}
+		if msg.Name != "" {
+			fmt.Printf("\n%v\n", msg)
+		}
 	}
+
 	client.socket.Close()
 }
 

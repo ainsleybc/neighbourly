@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -157,7 +158,7 @@ func SubscribeFeed(client *Client, data interface{}) {
 		client.user.Address.StreetName,
 		client.user.Address.Postcode,
 	}
-
+	fmt.Printf("%v\n\n\n\n\n", address)
 	go func() {
 		stop := client.NewStopChannel(ChannelStop)
 		cursor, _ := r.Table("feedAddresses").
