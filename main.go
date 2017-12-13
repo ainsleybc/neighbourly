@@ -20,7 +20,7 @@ func main() {
 	router.RegisterHandler("user login", app.LoginUser)
 
 	router.RegisterHandler("post add", app.AddPost)
-	router.RegisterHandler("post subscribe", app.SubscribeFeed)
+	router.RegisterHandler("post subscribe", app.SubscribePosts)
 	router.RegisterHandler("post unsubscribe", app.UnsubscribePosts)
 
 	router.RegisterHandler("feed add", app.AddFeed)
