@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -78,6 +79,7 @@ func SignUpUser(client *Client, data interface{}) {
 }
 
 func LoginUser(client *Client, data interface{}) {
+	fmt.Println("User logged in")
 	var login map[string]string
 	var user User
 	mapstructure.Decode(data, &login)
@@ -119,6 +121,7 @@ func AddFeed(client *Client, data interface{}) {
 }
 
 func AddPost(client *Client, data interface{}) {
+	fmt.Printf("\n\n\nData in AddPost function: %v\n\n\n", data)
 	var post Post
 	mapstructure.Decode(data, &post)
 	go func() {
@@ -158,16 +161,21 @@ func unsubscribeFeed(client *Client, data interface{}) {
 }
 
 func SubscribePosts(client *Client, data interface{}) {
+
 	go func() {
+		fmt.Printf("\n\n\n\nSubscribe posts called in go \n\n\n")
 		eventData := data.(map[string]interface{})
 		val, _ := eventData["feedId"]
+		fmt.Printf("%v\n\n\n", val)
 		feedID, _ := val.(string)
+		fmt.Printf("\n\nfeedID: %v\n\n", feedID)
 		stop := client.NewStopChannel(MessageStop)
 		cursor, _ := r.Table("posts").
-			OrderBy(r.OrderByOpts{Index: r.Desc("createdAt")}).
+			// OrderBy(r.OrderByOpts{Index: r.Desc("createdAt")}).
 			Filter(r.Row.Field("feed").Eq(feedID)).
 			Changes(r.ChangesOpts{IncludeInitial: true}).
 			Run(client.session)
+		// fmt.Printf("\n\nCursor:%v\n\n\n", cursor)
 		changeFeedHelper(cursor, "post", client.send, stop)
 	}()
 }
@@ -178,6 +186,7 @@ func unsubscribePosts(client *Client, data interface{}) {
 
 func changeFeedHelper(cursor *r.Cursor, changeEventName string,
 	send chan<- Message, stop <-chan bool) {
+	fmt.Printf("\nIwas Called!!!!!\n")
 	change := make(chan r.ChangeResponse)
 	cursor.Listen(change)
 	for {
@@ -185,10 +194,13 @@ func changeFeedHelper(cursor *r.Cursor, changeEventName string,
 		var data interface{}
 		select {
 		case <-stop:
+			fmt.Printf("\n\nThe other case block!!v\n\n\n")
+
 			cursor.Close()
 			return
 		case val := <-change:
 			if val.NewValue != nil && val.OldValue == nil {
+				fmt.Printf("Val: %v\n\n\n", val)
 				eventName = changeEventName + " add"
 				data = val.NewValue
 				send <- Message{eventName, data}

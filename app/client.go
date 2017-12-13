@@ -1,8 +1,6 @@
 package app
 
 import (
-	"fmt"
-
 	r "github.com/dancannon/gorethink"
 	"github.com/gorilla/websocket"
 )
@@ -44,7 +42,6 @@ func (c *Client) Read() {
 	var message Message
 	for {
 		if err := c.socket.ReadJSON(&message); err != nil {
-			fmt.Printf("%v\n", err)
 			break
 		}
 		c.Handle(message)
@@ -55,7 +52,6 @@ func (c *Client) Read() {
 func (client *Client) Write() {
 	for msg := range client.send {
 		if err := client.socket.WriteJSON(msg); err != nil {
-			fmt.Printf("%v", err)
 			break
 		}
 	}
