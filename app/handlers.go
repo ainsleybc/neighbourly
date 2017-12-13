@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ainsleybc/neighbourly/db"
 	r "github.com/dancannon/gorethink"
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/crypto/bcrypt"
@@ -24,11 +25,7 @@ func SignUpUser(client *Client, data interface{}) {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	user.Password = string(hash)
 
-	// default feed
-	// TODO - create a separate method - insert if not exists, otherwise fetch - will currently error
-	r.Table("addresses"). //create address
-				Insert(address).
-				RunWrite(client.session)
+	db.InsertAddress(client.session, address)
 
 	addressPk := []string{
 		address.StreetNumber,
@@ -60,7 +57,7 @@ func SignUpUser(client *Client, data interface{}) {
 		feed.ID = defaultFeed.(string)
 	} else {
 		// create new feed
-		resp, _ := r.Table("feeds").Insert(feed).RunWrite(client.session)
+		resp, _ := db.InsertFeed(client.session, feed)
 		feed.ID = resp.GeneratedKeys[0]
 	}
 
@@ -68,17 +65,15 @@ func SignUpUser(client *Client, data interface{}) {
 		Feed:    feed,
 		Address: address,
 	}
-	r.Table("feedAddresses").
-		Insert(feedAddress).
-		RunWrite(client.session)
+	db.InsertFeedAddress(client.session, feedAddress)
 
 	// assign default feed
 	user.DefaultFeed = feed
 	user.Address = address
+
 	// insert new user
-	err := r.Table("users").
-		Insert(user).
-		Exec(client.session)
+	_, err := db.InsertUser(client.session, user)
+
 	if err != nil {
 		client.send <- Message{Name: "signup unsuccesful"}
 		return
