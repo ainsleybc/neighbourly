@@ -17,7 +17,7 @@ func TestAddFeedAddress(t *testing.T) {
 
 	db.CleanUp("addFeedAddress")
 	db.Setup("addFeedAddress")
-	// defer db.CleanUp("addFeedAddress")
+	defer db.CleanUp("addFeedAddress")
 
 	// connect to rethinkDB
 	session, _ := r.Connect(r.ConnectOpts{
