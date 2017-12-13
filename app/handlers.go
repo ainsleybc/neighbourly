@@ -191,7 +191,6 @@ func SubscribePosts(client *Client, data interface{}) {
 		feedID, _ := val.(string)
 		stop := client.NewStopChannel(MessageStop)
 		cursor, _ := r.Table("posts").
-			OrderBy(r.OrderByOpts{Index: r.Desc("createdAt")}).
 			Filter(r.Row.Field("feed").Eq(feedID)).
 			Changes(r.ChangesOpts{IncludeInitial: true}).
 			Run(client.session)
