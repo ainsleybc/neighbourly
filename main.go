@@ -29,6 +29,7 @@ func main() {
 
 	router.RegisterHandler("feedAddress add", app.AddFeedAddress)
 	router.RegisterHandler("feedAddress subscribe", app.SubscribeAddress)
+	router.RegisterHandler("feedAddress unsubscribe", app.SubscribeAddress)
 
 	http.Handle("/", router)
 	http.ListenAndServe(":4000", nil)
