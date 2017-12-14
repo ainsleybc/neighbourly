@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -15,6 +14,7 @@ const (
 	ChannelStop = iota
 	UserStop
 	MessageStop
+	FeedAddressStop
 )
 
 func SignUpUser(client *Client, data interface{}) {
@@ -127,9 +127,7 @@ func AddFeed(client *Client, data interface{}) {
 		Feed:    feed,
 		Address: client.user.Address,
 	}
-	r.Table("feedAddresses").
-		Insert(feedAddress).
-		RunWrite(client.session)
+	AddFeedAddress(client, feedAddress)
 }
 
 func AddPost(client *Client, data interface{}) {
@@ -149,7 +147,6 @@ func SubscribeFeed(client *Client, data interface{}) {
 		client.user.Address.StreetName,
 		client.user.Address.Postcode,
 	}
-	fmt.Printf("%v\n\n\n\n\n", address)
 	go func() {
 		stop := client.NewStopChannel(ChannelStop)
 		cursor, _ := r.Table("feedAddresses").
@@ -201,7 +198,7 @@ func changeFeedHelper(cursor *r.Cursor, changeEventName string,
 			cursor.Close()
 			return
 		case val := <-change:
-			if val.NewValue != nil && val.OldValue == nil {
+			if val.NewValue != nil {
 				eventName = changeEventName + " add"
 				data = val.NewValue
 				send <- Message{eventName, data}
@@ -225,11 +222,15 @@ func SubscribeAddress(client *Client, data interface{}) {
 		eventData := data.(map[string]interface{})
 		val, _ := eventData["feedId"]
 		feedID, _ := val.(string)
-		stop := client.NewStopChannel(MessageStop)
+		stop := client.NewStopChannel(FeedAddressStop)
 		cursor, _ := r.Table("feedAddresses").
 			Filter(r.Row.Field("feed").Eq(feedID)).
 			Changes(r.ChangesOpts{IncludeInitial: true}).
 			Run(client.session)
 		changeFeedHelper(cursor, "feedAddress", client.send, stop)
 	}()
+}
+
+func UnsubscribeAddress(client *Client, data interface{}) {
+	client.StopForKey(FeedAddressStop)
 }
